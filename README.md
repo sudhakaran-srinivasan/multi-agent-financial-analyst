@@ -42,11 +42,17 @@ The core Investment Research Agent demonstrates:
 
 ```
 multi-agent-financial-analyst/
-├── agents/          # Agent definitions (planner, researcher, evaluator, specialists)
-├── workflows/        # Prompt chaining, routing, evaluator-optimizer implementations
-├── notebooks/        # Exploration and the final submitted code notebook
-├── data/             # Cached/sample data (raw API data excluded via .gitignore)
-├── memory/           # Persisted run notes/learnings across sessions
+├── agents/            # Agent definitions (planner, researcher, evaluator, specialists)
+├── workflows/         # Prompt chaining, routing, evaluator-optimizer implementations
+├── notebooks/         # Exploration and the final submitted code notebook
+├── data/              # Cached/sample data (raw API data excluded via .gitignore)
+├── memory/            # Persisted run notes/learnings across sessions
+├── tests/             # pytest — even 5-6 tests here outweighs everything else on this list
+├── .github/
+│   └── workflows/
+│       └── ci.yml     # runs pytest + lint on every push
+├── .env.example       # documents required keys; real .env is gitignored
+├── .gitignore
 ├── requirements.txt
 └── README.md
 ```
