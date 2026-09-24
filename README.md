@@ -47,7 +47,7 @@ multi-agent-financial-analyst/
 ├── notebooks/         # Exploration and the final submitted code notebook
 ├── data/              # Cached/sample data (raw API data excluded via .gitignore)
 ├── memory/            # Persisted run notes/learnings across sessions
-├── tests/             # pytest — even 5-6 tests here outweighs everything else on this list
+├── tests/             # pytest —  5-6 tests 
 ├── .github/
 │   └── workflows/
 │       └── ci.yml     # runs pytest + lint on every push
