@@ -7,8 +7,7 @@ AGENT DESIGN (rubric: Agent Design / Functions)
     Why       : the planner must plan from verified facts, never from the
                 model's guess about what kind of company this is.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic) and reviewed /
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI DISCLOSURE: 
 """
 from __future__ import annotations
 
