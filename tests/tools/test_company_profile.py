@@ -3,7 +3,8 @@ from datetime import date
 
 import pytest
 
-from company_profile import (
+from finagent.tools.company_profile import (
+    
     InvalidTickerError,
     NotAStockError,
     build_profile,
