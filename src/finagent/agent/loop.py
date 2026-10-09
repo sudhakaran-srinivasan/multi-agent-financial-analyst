@@ -66,12 +66,15 @@ def make_client() -> Any:
     never need the SDK or an API key. A missing key fails now, with a
     message naming it, instead of mid-run.
     """
-    from openai import OpenAI
-
-    return OpenAI(
-        api_key=config.require_env(config.OPENROUTER_KEY_NAME),
-        base_url=config.BASE_URL,
-    )
+    api_key = config.require_env(config.OPENROUTER_KEY_NAME)
+    try:
+        from openai import OpenAI
+    except ImportError as exc:
+        raise RuntimeError(
+            "The 'openai' package is not installed. Run: pip install openai "
+            "(and add it to pyproject.toml dependencies)."
+        ) from exc
+    return OpenAI(api_key=api_key, base_url=config.BASE_URL)
 
 
 def _pin_ticker(
