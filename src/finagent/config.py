@@ -8,7 +8,7 @@ Why one file?
     * ``.env`` is loaded once, here, instead of in every notebook cell.
     * A missing API key fails early with a message that names the key.
 
-AI DISCLOSURE:
+AI DISCLOSURE: 
 """
 
 import os
@@ -33,6 +33,10 @@ MAX_STEPS: int = 8
 # Upper bound on tokens the model may write per turn. Also avoids OpenRouter
 # rejecting requests when the account has limited credit.
 MAX_TOKENS: int = 1500
+
+# AUTHOR: confirm. 0 makes tool choices as repeatable as the model allows,
+# which keeps the notebook demo and the traces reproducible.
+TEMPERATURE: float = 0.0
 
 # Names of the secrets we expect in the environment (values live in .env).
 OPENROUTER_KEY_NAME: str = "OPENROUTER_API_KEY"
