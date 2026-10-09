@@ -14,12 +14,13 @@ Definition of "this works":
 
 import copy
 import json
+import sys
 from types import SimpleNamespace as NS
 from typing import get_type_hints
 
 import pytest
 
-from finagent.agent.loop import run_research_loop
+from finagent.agent.loop import make_client, run_research_loop
 from finagent.contracts import LoopResult
 from finagent.tools.company_profile import InvalidTickerError, NotAStockError, Profile
 from finagent.tools.tool_specs import TOOL_SPECS
@@ -225,3 +226,27 @@ def test_result_always_has_every_loop_result_key():
     assert set(done) == expected and set(failed) == expected
     json.dumps(done)  # must be JSON-serializable
     json.dumps(failed)
+
+
+# ---- make_client: setup problems must be clear, not tracebacks ------------
+def test_make_client_missing_key_names_the_key(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)  # no .env here
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    with pytest.raises(RuntimeError, match="OPENROUTER_API_KEY"):
+        make_client()
+
+
+def test_make_client_explains_a_missing_openai_package(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+    monkeypatch.setitem(sys.modules, "openai", None)  # makes the import fail
+    with pytest.raises(RuntimeError, match="pip install openai"):
+        make_client()
+
+
+def test_make_client_passes_key_and_base_url_to_the_sdk(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+    fake_sdk = NS(OpenAI=lambda **kwargs: NS(**kwargs))
+    monkeypatch.setitem(sys.modules, "openai", fake_sdk)
+    client = make_client()
+    assert client.api_key == "test-key"
+    assert client.base_url.startswith("https://openrouter.ai")
