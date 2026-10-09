@@ -8,8 +8,11 @@ AGENT DESIGN (rubric: Agent Design / Functions)
                  before changing: NewsInsight (A <-> B), Analysis (A <-> C),
                  Evaluation (C <-> notebook). Plan is internal to Track A.
     Profile    : lives in finagent.tools.company_profile (Track A only).
+    LoopResult : internal to Track A, but its `results` field (the raw tool
+                 outputs) is the fact base the evaluator checks numbers against.
 
-    Flow:  ticker -> Profile -> Plan -> tool loop -> Analysis -> Evaluation
+    Flow:  ticker -> Profile -> Plan -> tool loop -> LoopResult
+                                   |        -> Analysis -> Evaluation
                                    ^ NewsInsight list comes from Jeff's pipeline
 
 TypedDicts are plain dicts at runtime (json.dumps works); Literal types list
@@ -20,9 +23,12 @@ AI DISCLOSURE:
 """
 from __future__ import annotations
 
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
 
 # ---- allowed values -------------------------------------------------------
+# Why the tool loop stopped: the model said it was finished, the step cap was
+# hit, or a core-data error (bad ticker, not a stock) ended the run.
+StopReason = Literal["done", "step_cap", "fatal_error"]
 NewsCategory = Literal["earnings", "general", "market"]
 # Three labels, not a score: LLMs label consistently but invent false
 # precision with numbers; labels aggregate easily and map to +1/0/-1 later.
@@ -52,6 +58,37 @@ class Plan(TypedDict):
     ticker: str
     steps: list[PlanStep]
     priority_note: str  # one line on what the plan emphasizes and why
+
+
+# ---- LoopResult: tool loop -> synthesis, reflection, evaluator (Track A) ----
+class TraceStep(TypedDict):
+    """One tool call, kept as the audit trail (the notebook shows these)."""
+
+    step: int  # 0 = the pre-flight profile check; 1..N = model turns
+    tool: str
+    arguments: dict[str, Any]
+    ok: bool
+    error: str | None  # the text the model saw when ok is False
+
+
+class LoopResult(TypedDict):
+    """Everything the loop hands over when it stops.
+
+    Why these fields (each has a reader):
+        results      -> synthesis writes from it; the evaluator checks
+                        numbers against it. Python-computed facts, never
+                        the model's prose.
+        trace        -> reflection (what was tried and failed) and notebook.
+        stop_reason  -> reflection: step_cap means "maybe incomplete".
+    """
+
+    ticker: str
+    stop_reason: StopReason
+    steps_used: int  # model turns used; the pre-flight check does not count
+    profile: dict[str, Any] | None  # None when the pre-flight check failed
+    results: dict[str, Any]  # tool name -> latest successful structured output
+    trace: list[TraceStep]  # every call in order, including failed ones
+    fatal_error: str | None  # set only when stop_reason == "fatal_error"
 
 
 # ---- Analysis: agent core -> evaluator (crosses A <-> C) -------------------

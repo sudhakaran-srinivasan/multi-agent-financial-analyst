@@ -5,7 +5,9 @@ These are MOCKS to show the SHAPE. They are not investment analysis.
 """
 from __future__ import annotations
 
-from finagent.contracts import Analysis, Evaluation, NewsInsight, Plan
+from finagent.contracts import (
+    Analysis, Evaluation, LoopResult, NewsInsight, Plan,
+)
 
 SAMPLE_NEWS_INSIGHT: NewsInsight = {
     "category": "earnings",
@@ -59,4 +61,42 @@ SAMPLE_EVALUATION: Evaluation = {
     "feedback": ["Add a second risk, such as valuation compression."],
     "rounds_used": 1,
     "final_analysis": SAMPLE_ANALYSIS,
+}
+
+SAMPLE_LOOP_RESULT: LoopResult = {
+    "ticker": "NVDA",
+    "stop_reason": "done",
+    "steps_used": 4,
+    "profile": {"ticker": "NVDA", "name": "NVIDIA Corporation",
+                "quote_type": "EQUITY", "size_bucket": "mega"},
+    "results": {
+        "get_fundamentals": {
+            "ticker": "NVDA",
+            "valuation": {"trailingPE": 30.2, "forwardPE": 15.1},
+            "gaps": [],
+            "warnings": [],
+        },
+        "get_earnings_history": {
+            "ticker": "NVDA",
+            "summary": {"n": 4, "beats": 4, "beat_rate": 1.0},
+            "gaps": [],
+        },
+        "get_news_insights": [],
+    },
+    "trace": [
+        {"step": 0, "tool": "get_company_profile",
+         "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
+        {"step": 1, "tool": "get_fundamentals",
+         "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
+        {"step": 2, "tool": "get_dividends",
+         "arguments": {}, "ok": False,
+         "error": "unknown tool 'get_dividends'. Available tools: "
+                  "['get_earnings_history', 'get_fundamentals', "
+                  "'get_news_insights']"},
+        {"step": 3, "tool": "get_earnings_history",
+         "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
+        {"step": 4, "tool": "get_news_insights",
+         "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
+    ],
+    "fatal_error": None,
 }

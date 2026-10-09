@@ -1,15 +1,16 @@
 """Samples must match the contracts; the verdict rule must behave."""
 import types
 import typing
-from typing import Literal, Union, get_args, get_origin, get_type_hints
+from typing import Any, Literal, Union, get_args, get_origin, get_type_hints
 
 import pytest
 
 from finagent.contracts import (
-    Analysis, CriterionScore, Evaluation, NewsInsight, Plan,
+    Analysis, CriterionScore, Evaluation, LoopResult, NewsInsight, Plan,
 )
 from finagent.samples import (
-    SAMPLE_ANALYSIS, SAMPLE_EVALUATION, SAMPLE_NEWS_INSIGHT, SAMPLE_PLAN,
+    SAMPLE_ANALYSIS, SAMPLE_EVALUATION, SAMPLE_LOOP_RESULT,
+    SAMPLE_NEWS_INSIGHT, SAMPLE_PLAN,
 )
 from finagent.workflows.evaluation_rules import (
     CRITERION_FLOOR, MAX_ROUNDS, PASS_AVERAGE, RUBRIC_CRITERIA, decide_verdict,
@@ -19,12 +20,20 @@ from finagent.workflows.evaluation_rules import (
 def check(value, tp, path="value"):
     """Recursively verify `value` conforms to type `tp` (raises AssertionError)."""
     origin = get_origin(tp)
+    if tp is Any:
+        return  # any value is allowed (raw tool output)
     if origin is Literal:
         assert value in get_args(tp), f"{path}={value!r} not in {get_args(tp)}"
     elif origin is list:
         assert isinstance(value, list), f"{path} must be a list"
         for i, item in enumerate(value):
             check(item, get_args(tp)[0], f"{path}[{i}]")
+    elif origin is dict:
+        assert isinstance(value, dict), f"{path} must be a dict"
+        key_type, value_type = get_args(tp)
+        for k, v in value.items():
+            check(k, key_type, f"{path} key {k!r}")
+            check(v, value_type, f"{path}[{k!r}]")
     elif origin in (Union, types.UnionType):
         for option in get_args(tp):
             try:
@@ -56,6 +65,7 @@ def check(value, tp, path="value"):
     (SAMPLE_PLAN, Plan),
     (SAMPLE_ANALYSIS, Analysis),
     (SAMPLE_EVALUATION, Evaluation),
+    (SAMPLE_LOOP_RESULT, LoopResult),
 ])
 def test_samples_conform_to_contracts(sample, contract):
     check(sample, contract)
@@ -110,3 +120,34 @@ def test_checker_rejects_bool_where_number_expected():
     bad = {**SAMPLE_ANALYSIS["evidence_used"][0], "value": True}
     with pytest.raises(AssertionError):
         check(bad, typing.get_type_hints(Analysis)["evidence_used"].__args__[0])
+
+
+def test_checker_rejects_bad_stop_reason():
+    bad = {**SAMPLE_LOOP_RESULT, "stop_reason": "gave_up"}
+    with pytest.raises(AssertionError):
+        check(bad, LoopResult)
+
+
+def test_checker_rejects_a_trace_step_with_a_missing_key():
+    broken = {k: v for k, v in SAMPLE_LOOP_RESULT["trace"][0].items() if k != "ok"}
+    bad = {**SAMPLE_LOOP_RESULT, "trace": [broken]}
+    with pytest.raises(AssertionError):
+        check(bad, LoopResult)
+
+
+def test_loop_result_with_failed_preflight_is_valid():
+    """Bad ticker: no profile, no results, and a fatal_error message."""
+    failed = {
+        "ticker": "ZZZZZZ", "stop_reason": "fatal_error", "steps_used": 0,
+        "profile": None, "results": {},
+        "trace": [{"step": 0, "tool": "get_company_profile",
+                   "arguments": {"ticker": "ZZZZZZ"}, "ok": False,
+                   "error": "InvalidTickerError: no such ticker"}],
+        "fatal_error": "InvalidTickerError: no such ticker",
+    }
+    check(failed, LoopResult)
+
+
+def test_sample_loop_result_is_json_serializable():
+    import json
+    assert json.loads(json.dumps(SAMPLE_LOOP_RESULT))["ticker"] == "NVDA"
