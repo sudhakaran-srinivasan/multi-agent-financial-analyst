@@ -19,7 +19,7 @@ SAMPLE_PLAN: Plan = {
     "steps": [
         {"tool": "get_fundamentals", "reason": "profitable mega-cap: check valuation"},
         {"tool": "get_earnings_history", "reason": "earnings due within 60 days"},
-        {"tool": "news_insights", "reason": "high news volume"},
+        {"tool": "get_news_insights", "reason": "high news volume"},
     ],
     "priority_note": "Earnings are close, so weigh the beat record heavily.",
 }
