@@ -8,8 +8,7 @@ AGENT DESIGN (rubric: Agent Design / Functions)
                 `gaps` tells the agent WHY a number is absent so it can
                 reason (re-fetch, lower confidence, or state a limitation).
 
-AI DISCLOSURE: 
-
+AI DISCLOSURE:  # AUTHOR:.
 """
 from __future__ import annotations
 
@@ -105,11 +104,42 @@ def _derive(g: dict[str, dict[str, float | None]], market_cap: float | None,
     return derived
 
 
-def build_fundamentals(ticker: str, info: dict) -> Fundamentals:
-    """Pure logic (no network): clean every registry field and assemble groups."""
+def extract_ttm_fcf(frame: object) -> float | None:
+    """Pull trailing-twelve-month free cash flow from a yfinance cash-flow table.
+
+    ``Ticker.ttm_cashflow`` is a table: rows are line items, columns are
+    period-end dates. We read the "Free Cash Flow" row and take the newest
+    date. Anything unexpected (no table, no row, only NaN) returns None, so
+    the caller can fall back instead of crashing.
+    """
+    try:
+        row = frame.loc["Free Cash Flow"]  # type: ignore[attr-defined]
+        values = row.dropna().sort_index()
+        value = float(values.iloc[-1])
+    except (AttributeError, KeyError, IndexError, TypeError, ValueError):
+        return None
+    return value if math.isfinite(value) else None
+
+
+def build_fundamentals(ticker: str, info: dict,
+                       ttm_fcf: float | None = None) -> Fundamentals:
+    """Pure logic (no network): clean every registry field and assemble groups.
+
+    ``ttm_fcf`` is trailing-twelve-month free cash flow from the cash-flow
+    statement. It replaces Yahoo's ``info["freeCashflow"]``, which for NVDA
+    ($41.8B) matched no reported period while the statement said $127.0B.
+    Without it we fall back to the summary value and warn that it is unverified.
+    """
     groups: dict[str, dict[str, float | None]] = {name: {} for name in GROUPS}
     gaps: list[Gap] = []
     warnings: list[str] = []
+
+    if ttm_fcf is not None:
+        info = {**info, "freeCashflow": ttm_fcf}  # one source: the statement
+    elif info.get("freeCashflow") is not None:
+        warnings.append(
+            "freeCashflow comes from Yahoo's summary, not the cash-flow "
+            "statement; it can disagree with reported figures (unverified)")
 
     eps_raw = info.get("trailingEps")
     loses_money = isinstance(eps_raw, (int, float)) and not isinstance(eps_raw, bool) \
@@ -144,13 +174,19 @@ def build_fundamentals(ticker: str, info: dict) -> Fundamentals:
     )
 
 
-def get_fundamentals(ticker: str, info: dict | None = None) -> Fundamentals:
+def get_fundamentals(ticker: str, info: dict | None = None,
+                     ttm_fcf: float | None = None) -> Fundamentals:
     """Fetch (unless `info` is supplied) and build Fundamentals.
 
-    Pass an already-fetched `info` to avoid a second Yahoo call per run.
+    Pass an already-fetched `info` (and `ttm_fcf`) to avoid extra Yahoo calls.
     """
     if info is None:
         import yfinance as yf  # local import keeps build_fundamentals offline-testable
 
-        info = yf.Ticker(ticker.strip().upper()).info
-    return build_fundamentals(ticker, info)
+        stock = yf.Ticker(ticker.strip().upper())
+        info = stock.info
+        try:
+            ttm_fcf = extract_ttm_fcf(stock.ttm_cashflow)
+        except Exception:  # noqa: BLE001  - optional upgrade; never fail the tool
+            ttm_fcf = None
+    return build_fundamentals(ticker, info, ttm_fcf)

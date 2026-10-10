@@ -1,10 +1,12 @@
 """Definition of 'this works' for get_fundamentals (pure logic, offline)."""
-import math
 
 import pytest
 
-from finagent.tools.fundamentals import build_fundamentals
+from finagent.tools.fundamentals import build_fundamentals, extract_ttm_fcf
 from finagent.tools.registry import GROUPS, REGISTRY
+
+# TTM free cash flow from the cash-flow statement (Yahoo page: 127,006,000K).
+NVDA_TTM_FCF = 127_006_000_000
 
 # Real NVDA values from our own yfinance dump.
 NVDA = {
@@ -28,7 +30,7 @@ def gap_for(result, field):
 
 
 def test_nvda_all_groups_filled_and_clean():
-    r = build_fundamentals("nvda", NVDA)
+    r = build_fundamentals("nvda", NVDA, NVDA_TTM_FCF)
     assert r["ticker"] == "NVDA"
     assert all(r[g] for g in GROUPS)
     assert r["valuation"]["trailingPE"] == pytest.approx(30.24526)
@@ -47,10 +49,45 @@ def test_dividend_yield_is_normalized_to_fraction():
 
 
 def test_derived_metrics_on_nvda():
-    d = build_fundamentals("NVDA", NVDA)["derived"]
+    d = build_fundamentals("NVDA", NVDA, NVDA_TTM_FCF)["derived"]
     assert d["net_cash"] == pytest.approx(62469001216 - 38860001280)
-    assert d["fcf_yield"] == pytest.approx(41809874944 / 5776928145408)
+    assert d["fcf_yield"] == pytest.approx(127_006_000_000 / 5776928145408)
     assert d["pe_recomputed"] == pytest.approx(239.24 / 7.91)
+
+
+def test_statement_fcf_overrides_the_yahoo_summary_value():
+    """Regression: info said $41.8B, the statement says $127.0B."""
+    r = build_fundamentals("NVDA", NVDA, NVDA_TTM_FCF)
+    assert r["balance_sheet"]["freeCashflow"] == NVDA_TTM_FCF
+    assert not any("freeCashflow" in w for w in r["warnings"])
+
+
+def test_without_statement_fcf_we_fall_back_and_warn():
+    r = build_fundamentals("NVDA", NVDA)
+    assert r["balance_sheet"]["freeCashflow"] == 41809874944
+    assert any("unverified" in w for w in r["warnings"])
+
+
+def test_extract_ttm_fcf_reads_the_newest_column():
+    pd = pytest.importorskip("pandas")
+    frame = pd.DataFrame(
+        {"2026-07-31": [1.27006e11], "2025-07-31": [6.0e10]},
+        index=["Free Cash Flow"])
+    assert extract_ttm_fcf(frame) == pytest.approx(1.27006e11)
+
+
+@pytest.mark.parametrize("bad", [None, "nope", {}])
+def test_extract_ttm_fcf_returns_none_for_unusable_input(bad):
+    assert extract_ttm_fcf(bad) is None
+
+
+def test_extract_ttm_fcf_returns_none_when_row_is_missing_or_nan():
+    pd = pytest.importorskip("pandas")
+    no_row = pd.DataFrame({"2026-07-31": [1.0]}, index=["Capital Expenditure"])
+    all_nan = pd.DataFrame({"2026-07-31": [float("nan")]},
+                           index=["Free Cash Flow"])
+    assert extract_ttm_fcf(no_row) is None
+    assert extract_ttm_fcf(all_nan) is None
 
 
 def test_loss_making_company_explains_missing_pe():

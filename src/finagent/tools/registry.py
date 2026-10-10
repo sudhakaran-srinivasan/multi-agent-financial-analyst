@@ -10,7 +10,7 @@ Two kinds of bounds (see FieldSpec):
     hard  -> impossible values = bad data -> value becomes None + a gap
     soft  -> unusual but possible -> value kept + a warning
 
-AI DISCLOSURE: 
+AI DISCLOSURE:   # AUTHOR:.
 """
 from __future__ import annotations
 
@@ -98,7 +98,8 @@ REGISTRY: tuple[FieldSpec, ...] = (
               "Short-term assets vs. short-term bills; below 1 = liquidity strain.",
               hard_min=0, hard_max=1000, soft_min=1, soft_max=20),
     FieldSpec("freeCashflow", "balance_sheet", "USD",
-              "Cash left after capital spending: the most 'real' profit measure."),
+              "Trailing-12-month cash left after capital spending (from the "
+              "cash-flow statement): the most 'real' profit measure."),
     FieldSpec("totalCash", "balance_sheet", "USD",
               "Cash and short-term investments on hand.", hard_min=0),
     FieldSpec("totalDebt", "balance_sheet", "USD",
