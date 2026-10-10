@@ -21,6 +21,7 @@ from typing import get_type_hints
 import pytest
 
 from finagent.agent.loop import make_client, run_research_loop
+from finagent.agent.planner import PlannerOutcome, default_plan
 from finagent.contracts import LoopResult
 from finagent.tools.company_profile import InvalidTickerError, NotAStockError, Profile
 from finagent.tools.tool_specs import TOOL_SPECS
@@ -77,10 +78,16 @@ def fake_tools():
     return functions, seen
 
 
+def fake_planner(ticker, profile, client, *, specs=None):
+    """Planner stand-in: no model reply is consumed, so tests stay short."""
+    return PlannerOutcome(default_plan(ticker, profile), None)
+
+
 def run(replies, **overrides):
     functions, seen = fake_tools()
     client = ScriptedClient(replies)
-    kwargs = {"profile_fn": fake_profile, "functions": functions}
+    kwargs = {"profile_fn": fake_profile, "functions": functions,
+              "plan_fn": fake_planner}
     kwargs.update(overrides)
     result = run_research_loop("nvda", client, **kwargs)
     return result, client, seen
@@ -107,8 +114,9 @@ def test_normal_run_keeps_results_and_feeds_them_back_to_the_model():
     assert result["stop_reason"] == "done" and result["steps_used"] == 2
     assert set(result["results"]) == {"get_fundamentals", "get_earnings_history"}
     assert [t["tool"] for t in result["trace"]] == [
-        "get_company_profile", "get_fundamentals", "get_earnings_history"]
-    assert [t["step"] for t in result["trace"]] == [0, 1, 1]
+        "get_company_profile", "plan_research",
+        "get_fundamentals", "get_earnings_history"]
+    assert [t["step"] for t in result["trace"]] == [0, 0, 1, 1]
     assert all(t["ok"] for t in result["trace"])
     assert seen == [("get_fundamentals", "NVDA"), ("get_earnings_history", "NVDA")]
 
@@ -131,6 +139,26 @@ def test_first_request_has_menu_profile_and_settings():
     assert request["max_tokens"] > 0
 
 
+def test_the_plan_is_kept_and_shown_to_the_model():
+    result, client, _ = run([turn()])
+    assert result["plan"]["ticker"] == "NVDA"
+    assert [s["tool"] for s in result["plan"]["steps"]][:2] == [
+        "get_fundamentals", "get_earnings_history"]
+    assert "Research plan" in client.requests[0]["messages"][1]["content"]
+    assert "Follow it" in client.requests[0]["messages"][0]["content"]
+
+
+def test_a_planner_fallback_is_recorded_and_the_run_continues():
+    def failing_planner(ticker, profile, client, *, specs=None):
+        return PlannerOutcome(default_plan(ticker, profile), "PlanError: bad json")
+
+    result, _, _ = run([turn()], plan_fn=failing_planner)
+    assert result["stop_reason"] == "done"
+    planned = [t for t in result["trace"] if t["tool"] == "plan_research"][0]
+    assert planned["ok"] is False and "bad json" in planned["error"]
+    assert result["plan"] is not None  # the default plan was still used
+
+
 def test_a_model_that_never_stops_is_ended_by_the_step_cap():
     always_asks = [turn(tool_call(f"c{i}", "get_fundamentals", {"ticker": "NVDA"}))
                    for i in range(10)]
@@ -138,7 +166,7 @@ def test_a_model_that_never_stops_is_ended_by_the_step_cap():
     assert result["stop_reason"] == "step_cap"
     assert result["steps_used"] == 3
     assert len(client.requests) == 3
-    assert len(result["trace"]) == 1 + 3  # pre-flight + three calls
+    assert len(result["trace"]) == 2 + 3  # profile + plan + three calls
 
 
 def test_unknown_tool_is_sent_back_as_an_error_and_the_run_continues():
@@ -181,6 +209,7 @@ def test_bad_ticker_stops_before_any_model_call(error):
     result, client, _ = run([], profile_fn=failing_profile)
     assert result["stop_reason"] == "fatal_error"
     assert result["steps_used"] == 0 and result["profile"] is None
+    assert result["plan"] is None  # stopped before planning
     assert type(error).__name__ in result["fatal_error"]
     assert client.requests == []  # zero model cost
     assert result["trace"][0]["tool"] == "get_company_profile"

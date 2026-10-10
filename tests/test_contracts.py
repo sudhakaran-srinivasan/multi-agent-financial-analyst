@@ -43,6 +43,7 @@ def check(value, tp, path="value"):
                 continue
         raise AssertionError(f"{path}={value!r} matches none of {get_args(tp)}")
     elif typing.is_typeddict(tp):
+        assert isinstance(value, dict), f"{path} must be a dict"
         hints = get_type_hints(tp)
         assert set(value) == set(hints), f"{path} keys {set(value)} != {set(hints)}"
         for key, sub in hints.items():
@@ -139,7 +140,7 @@ def test_loop_result_with_failed_preflight_is_valid():
     """Bad ticker: no profile, no results, and a fatal_error message."""
     failed = {
         "ticker": "ZZZZZZ", "stop_reason": "fatal_error", "steps_used": 0,
-        "profile": None, "results": {},
+        "profile": None, "plan": None, "results": {},
         "trace": [{"step": 0, "tool": "get_company_profile",
                    "arguments": {"ticker": "ZZZZZZ"}, "ok": False,
                    "error": "InvalidTickerError: no such ticker"}],

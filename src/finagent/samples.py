@@ -69,6 +69,17 @@ SAMPLE_LOOP_RESULT: LoopResult = {
     "steps_used": 4,
     "profile": {"ticker": "NVDA", "name": "NVIDIA Corporation",
                 "quote_type": "EQUITY", "size_bucket": "mega"},
+    "plan": {
+        "ticker": "NVDA",
+        "steps": [
+            {"tool": "get_fundamentals",
+             "reason": "mega-cap: check valuation, margins and growth"},
+            {"tool": "get_earnings_history",
+             "reason": "earnings due soon: weigh the beat record"},
+            {"tool": "get_news_insights", "reason": "recent news sentiment"},
+        ],
+        "priority_note": "Earnings are close, so weigh the beat record heavily.",
+    },
     "results": {
         "get_fundamentals": {
             "ticker": "NVDA",
@@ -85,6 +96,8 @@ SAMPLE_LOOP_RESULT: LoopResult = {
     },
     "trace": [
         {"step": 0, "tool": "get_company_profile",
+         "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
+        {"step": 0, "tool": "plan_research",
          "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
         {"step": 1, "tool": "get_fundamentals",
          "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},

@@ -24,7 +24,9 @@ Agent Design (rubric: Agent Functions, "uses tools dynamically").
 Testing: the model client is injected, so tests use a scripted fake and need
 no API key. Real runs build a client with ``make_client``.
 
-AI DISCLOSURE: # AUTHOR:`` are theirs to review and reword.
+AI DISCLOSURE: structure drafted with Claude (Anthropic). The prompt text
+and the stop rules follow decisions made by the project owner; prompt lines
+marked ``# AUTHOR:`` are theirs to review and reword.
 """
 
 from __future__ import annotations
@@ -36,7 +38,8 @@ from typing import Any
 
 from finagent import config
 from finagent.agent.dispatcher import dispatch, render_for_model
-from finagent.contracts import LoopResult, StopReason, TraceStep
+from finagent.agent.planner import PlannerOutcome, plan_research
+from finagent.contracts import LoopResult, Plan, StopReason, TraceStep
 from finagent.tools.company_profile import get_company_profile
 from finagent.tools.tool_specs import TOOL_FUNCTIONS, TOOL_SPECS
 
@@ -50,8 +53,9 @@ so do not write one.
 Rules:
 - Research only {ticker}. Always call tools with exactly that ticker.
 - The company profile is already fetched and shown below. Do not ask for it.
-- Choose the tools that matter for this company. Use each tool at most once \
-unless it failed.
+- A research plan is included below. Follow it: call the tools it lists, in \
+its order. Change course only if a tool fails.
+- Use each tool at most once unless it failed.
 - Never guess or invent numbers. If a tool fails, you may retry once, then \
 move on.
 - When you have enough data, or tools keep failing, reply with one short \
@@ -136,6 +140,7 @@ def run_research_loop(
     profile_fn: Callable[[str], Any] = get_company_profile,
     functions: dict[str, Callable[..., Any]] | None = None,
     specs: list[dict[str, Any]] | None = None,
+    plan_fn: Callable[..., PlannerOutcome] = plan_research,
     max_steps: int = config.MAX_STEPS,
 ) -> LoopResult:
     """Gather data on ``ticker`` with a model-driven tool loop.
@@ -147,6 +152,8 @@ def run_research_loop(
         profile_fn: Pre-flight check. Injected so tests need no network.
         functions: Tool name -> function map (defaults to the real tools).
         specs: Tool menu shown to the model (defaults to the real menu).
+        plan_fn: Planner, called after the pre-flight check. Injected so tests
+            need no second scripted model reply. It never ends the run.
         max_steps: Cap on model turns. The pre-flight does not count.
 
     Returns:
@@ -164,12 +171,14 @@ def run_research_loop(
 
     def finish(stop_reason: StopReason, steps_used: int,
                profile: dict[str, Any] | None,
-               fatal_error: str | None = None) -> LoopResult:
+               fatal_error: str | None = None,
+               plan: Plan | None = None) -> LoopResult:
         return {
             "ticker": ticker,
             "stop_reason": stop_reason,
             "steps_used": steps_used,
             "profile": profile,
+            "plan": plan,
             "results": results,
             "trace": trace,
             "fatal_error": fatal_error,
@@ -188,11 +197,19 @@ def run_research_loop(
                              {"ticker": ticker}, True, None))
     profile_dict = _profile_to_dict(profile)
 
+    # ---- planning: decide what to research before any data tool runs ----
+    outcome = plan_fn(ticker, profile_dict, client, specs=specs)
+    plan = outcome.plan
+    trace.append(_trace_step(0, "plan_research", {"ticker": ticker},
+                             outcome.fallback_reason is None,
+                             outcome.fallback_reason))
+
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": SYSTEM_PROMPT.format(ticker=ticker)},
         {"role": "user",
          "content": f"Gather data to research {ticker}.\n\nCompany profile:\n"
-                    f"{json.dumps(profile_dict, indent=2)}"},
+                    f"{json.dumps(profile_dict, indent=2)}\n\n"
+                    f"Research plan:\n{json.dumps(plan, indent=2)}"},
     ]
     pinned = _pin_ticker(functions, ticker)
 
@@ -242,4 +259,4 @@ def run_research_loop(
 
     if stop_reason is None:  # the for-loop ran out of steps
         stop_reason = "step_cap"
-    return finish(stop_reason, steps_used, profile_dict, fatal_message)
+    return finish(stop_reason, steps_used, profile_dict, fatal_message, plan)

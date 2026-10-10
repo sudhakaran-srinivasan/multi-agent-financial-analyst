@@ -15,7 +15,7 @@ from finagent.samples import SAMPLE_LOOP_RESULT
 
 FATAL_RESULT = {
     "ticker": "ZZZZZZ", "stop_reason": "fatal_error", "steps_used": 0,
-    "profile": None, "results": {},
+    "profile": None, "plan": None, "results": {},
     "trace": [{"step": 0, "tool": "get_company_profile",
                "arguments": {"ticker": "ZZZZZZ"}, "ok": False,
                "error": "InvalidTickerError: no such ticker"}],
@@ -32,6 +32,16 @@ def test_report_shows_stop_reason_trace_and_results():
     assert "ERROR: unknown tool 'get_dividends'" in text
     assert "NVIDIA Corporation" in text and "mega-cap" in text
     assert "0 items" in text  # the empty news list is visible, not hidden
+
+
+def test_report_shows_the_plan_and_its_emphasis():
+    text = format_report(SAMPLE_LOOP_RESULT)
+    assert "Plan:" in text and "1. get_fundamentals:" in text
+    assert "Emphasis: Earnings are close" in text
+
+
+def test_report_without_a_plan_has_no_plan_section():
+    assert "Plan:" not in format_report(FATAL_RESULT)
 
 
 def test_report_shows_gaps_from_a_result():

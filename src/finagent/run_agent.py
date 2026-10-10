@@ -24,7 +24,7 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from finagent.agent.loop import run_research_loop
-from finagent.contracts import LoopResult
+from finagent.contracts import LoopResult, Plan
 
 _MAX_ERROR_CHARS = 100
 
@@ -41,6 +41,17 @@ def _profile_line(profile: dict[str, Any] | None) -> str:
     if profile.get("days_to_earnings") is not None:
         parts.append(f"earnings in {profile['days_to_earnings']} days")
     return "Profile: " + ", ".join(parts)
+
+
+def _plan_lines(plan: Plan | None) -> list[str]:
+    """The plan as readable lines; empty when the run stopped before planning."""
+    if plan is None:
+        return []
+    lines = ["", "Plan:"]
+    lines += [f"  {i}. {step['tool']}: {step['reason']}"
+              for i, step in enumerate(plan["steps"], start=1)]
+    lines.append(f"  Emphasis: {plan['priority_note']}")
+    return lines
 
 
 def _result_line(name: str, data: Any) -> str:
@@ -64,9 +75,12 @@ def _result_line(name: str, data: Any) -> str:
 def format_report(result: LoopResult) -> str:
     """Turn a LoopResult into a short, human-readable report (pure function)."""
     lines = [
-        f"{result['ticker']}  |  stop: {result['stop_reason']}"
-        f"  |  model steps: {result['steps_used']}",
+        (f"{result['ticker']}  |  stop: {result['stop_reason']}"
+         f"  |  model steps: {result['steps_used']}"),
         _profile_line(result["profile"]),
+    ]
+    lines += _plan_lines(result["plan"])
+    lines += [
         "",
         "Trace (step 0 = pre-flight check):",
     ]

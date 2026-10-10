@@ -19,7 +19,8 @@ TypedDicts are plain dicts at runtime (json.dumps works); Literal types list
 the only allowed values. Python does not enforce them at runtime, so
 tests/test_contracts.py checks the samples against these definitions.
 
-AI DISCLOSURE: 
+AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
+modified by the author. Author-owned decisions are marked  # AUTHOR:.
 """
 from __future__ import annotations
 
@@ -78,6 +79,7 @@ class LoopResult(TypedDict):
         results      -> synthesis writes from it; the evaluator checks
                         numbers against it. Python-computed facts, never
                         the model's prose.
+        plan         -> reflection compares what ran against what was planned.
         trace        -> reflection (what was tried and failed) and notebook.
         stop_reason  -> reflection: step_cap means "maybe incomplete".
     """
@@ -86,6 +88,7 @@ class LoopResult(TypedDict):
     stop_reason: StopReason
     steps_used: int  # model turns used; the pre-flight check does not count
     profile: dict[str, Any] | None  # None when the pre-flight check failed
+    plan: Plan | None  # None when the run stopped before planning
     results: dict[str, Any]  # tool name -> latest successful structured output
     trace: list[TraceStep]  # every call in order, including failed ones
     fatal_error: str | None  # set only when stop_reason == "fatal_error"
