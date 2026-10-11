@@ -2,6 +2,7 @@
 
     python -m finagent.run_agent NVDA
     python -m finagent.run_agent NVDA --json     # full LoopResult as JSON
+    python -m finagent.run_agent NVDA --analyze  # also write the analysis
 
 Why a separate file? The loop is a library function other code (the notebook,
 synthesis, tests) calls. This file is the thin "front door" for a human at a
@@ -24,7 +25,9 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from finagent.agent.loop import run_research_loop
-from finagent.contracts import LoopResult, Plan
+from finagent.agent.signals import Signal
+from finagent.agent.synthesis import DISCLAIMER, SynthesisOutcome, analyze_run
+from finagent.contracts import Analysis, LoopResult, Plan
 
 _MAX_ERROR_CHARS = 100
 
@@ -98,13 +101,47 @@ def format_report(result: LoopResult) -> str:
     return "\n".join(lines)
 
 
+def _signal_line(signal: Signal) -> str:
+    marks = {"positive": "+", "neutral": "=", "negative": "-"}
+    return f"  [{marks[signal['direction']]}] {signal['name']}: {signal['why']}"
+
+
+def format_analysis(outcome: SynthesisOutcome) -> str:
+    """The analysis as readable text (pure function), ending with the disclaimer."""
+    analysis: Analysis = outcome.analysis
+    lines = [
+        "",
+        (f"ANALYSIS  |  stance: {analysis['stance']}"
+         f"  |  confidence: {analysis['confidence']}"),
+        "",
+        analysis["thesis"],
+        "",
+        "Signals computed by Python ([+] positive, [=] neutral, [-] negative):",
+    ]
+    lines += [_signal_line(s) for s in outcome.signals] or ["  (none)"]
+    lines += ["", "Evidence:"]
+    lines += [f"  - {e['claim']} = {e['value']}  <{e['source']}>"
+              for e in analysis["evidence_used"]] or ["  (none)"]
+    lines += ["", "Risks:"] + [f"  - {r}" for r in analysis["risks"]]
+    lines += ["", "Data gaps:"]
+    lines += [f"  - {g}" for g in analysis["data_gaps"]] or ["  (none)"]
+    if analysis["sources"]:
+        lines += ["", "Sources:"] + [f"  - {s}" for s in analysis["sources"]]
+    if outcome.fallback_reason:
+        lines += ["", f"NOTE: model analysis not used ({outcome.fallback_reason})"]
+    lines += [f"NOTE: {note}" for note in outcome.notes]
+    lines += ["", DISCLAIMER]
+    return "\n".join(lines)
+
+
 def main(
     argv: Sequence[str] | None = None,
     runner: Callable[[str], LoopResult] = run_research_loop,
+    analyst: Callable[[LoopResult], SynthesisOutcome] = analyze_run,
 ) -> int:
     """Parse arguments, run the loop, print the report, return an exit code.
 
-    ``runner`` is injectable so tests can check this file without any model.
+    ``runner`` and ``analyst`` are injectable so tests need no model.
     """
     parser = argparse.ArgumentParser(
         prog="python -m finagent.run_agent",
@@ -112,7 +149,9 @@ def main(
     )
     parser.add_argument("ticker", help="stock symbol, for example NVDA")
     parser.add_argument("--json", action="store_true",
-                        help="print the full LoopResult as JSON")
+                        help="print the full result as JSON")
+    parser.add_argument("--analyze", action="store_true",
+                        help="after the data loop, write the analysis")
     args = parser.parse_args(argv)
 
     try:
@@ -121,8 +160,22 @@ def main(
         print(f"Setup problem: {exc}", file=sys.stderr)
         return 2
 
-    print(json.dumps(result, indent=2) if args.json else format_report(result))
-    return 1 if result["stop_reason"] == "fatal_error" else 0
+    fatal = result["stop_reason"] == "fatal_error"
+    outcome = analyst(result) if args.analyze and not fatal else None
+
+    if args.json:
+        payload: dict[str, Any] = {"loop": result} if args.analyze else dict(result)
+        if outcome is not None:
+            payload.update(
+                analysis=outcome.analysis, signals=outcome.signals,
+                analysis_fallback=outcome.fallback_reason, analysis_notes=outcome.notes,
+                disclaimer=DISCLAIMER)
+        print(json.dumps(payload, indent=2, default=str))
+    else:
+        print(format_report(result))
+        if outcome is not None:
+            print(format_analysis(outcome))
+    return 1 if fatal else 0
 
 
 if __name__ == "__main__":
