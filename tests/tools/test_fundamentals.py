@@ -2,7 +2,11 @@
 
 import pytest
 
-from finagent.tools.fundamentals import build_fundamentals, extract_ttm_fcf
+from finagent.tools.fundamentals import (
+    EXPECTED_GAP_REASONS,
+    build_fundamentals,
+    extract_ttm_fcf,
+)
 from finagent.tools.registry import GROUPS, REGISTRY
 
 # TTM free cash flow from the cash-flow statement (Yahoo page: 127,006,000K).
@@ -98,6 +102,25 @@ def test_loss_making_company_explains_missing_pe():
     assert gap_for(r, "forwardPE")["reason"] == "negative_earnings"
     assert r["derived"]["pe_recomputed"] is None
     assert gap_for(r, "pe_recomputed") is None  # not a data gap: expected
+
+
+def test_negative_multiple_is_not_meaningful_not_out_of_range():
+    """Real AADX case: negative EBITDA makes EV/EBITDA undefined, data is fine."""
+    r = build_fundamentals("AADX", {**NVDA, "enterpriseToEbitda": -35.0})
+    assert r["valuation"]["enterpriseToEbitda"] is None
+    assert gap_for(r, "enterpriseToEbitda")["reason"] == "not_meaningful"
+
+
+def test_absurdly_high_multiple_is_still_out_of_range():
+    r = build_fundamentals("X", {**NVDA, "enterpriseToEbitda": 99999})
+    assert gap_for(r, "enterpriseToEbitda")["reason"] == "out_of_range"
+
+
+def test_expected_gap_reasons_cover_company_driven_gaps_only():
+    assert "negative_earnings" in EXPECTED_GAP_REASONS
+    assert "not_meaningful" in EXPECTED_GAP_REASONS
+    assert "missing" not in EXPECTED_GAP_REASONS
+    assert "out_of_range" not in EXPECTED_GAP_REASONS
 
 
 def test_hard_bound_violation_becomes_none_with_gap():

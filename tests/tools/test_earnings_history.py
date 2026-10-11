@@ -74,6 +74,23 @@ def test_zero_estimate_has_no_percent_but_is_classified():
     assert gap_reasons(r)["FY2027Q1.surprise_pct"] == "zero_estimate"
 
 
+def test_near_zero_estimate_gives_no_percent_but_keeps_the_label():
+    """Real AADX row: estimate $0.0281, actual -$1.04 printed -3801%."""
+    r = build_earnings_history("AADX", [row(0.0281, -1.04, year=2026, quarter=2)])
+    q = r["quarters"][0]
+    assert q["result"] == "miss"
+    assert q["surprise_pct"] is None
+    assert q["estimate"] == 0.0281 and q["actual"] == -1.04
+    assert gap_reasons(r)["FY2026Q2.surprise_pct"] == "near_zero_estimate"
+    assert r["summary"]["avg_surprise_pct"] is None
+    assert r["summary"]["misses"] == 1
+
+
+def test_estimate_at_the_threshold_still_gets_a_percent():
+    q = build_earnings_history("X", [row(0.10, 0.12)])["quarters"][0]
+    assert q["surprise_pct"] == pytest.approx(20.0)
+
+
 @pytest.mark.parametrize("rows", [[], None, "oops"])
 def test_empty_or_bad_input_is_no_history(rows):
     r = build_earnings_history("IPO", rows)

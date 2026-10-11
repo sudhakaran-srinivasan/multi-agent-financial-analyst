@@ -20,6 +20,11 @@ DESIGN REASONING (author-owned decision: follow the FactSet convention)
         so raw equality would almost never happen. We round both sides to cents
         (ROUND_HALF_UP via Decimal, not float round(), which can misround
         values such as 2.675) before comparing.
+    Near-zero estimates
+        When |estimate| is under MIN_ESTIMATE_FOR_PERCENT the percent is left
+        as None (reason "near_zero_estimate"): a few-cent denominator turns
+        any miss into thousands of percent. The label and the raw estimate and
+        actual stay, so the dollar gap is still readable.
     Magnitude is kept separately
         surprise_pct = (actual - estimate) / |estimate| * 100. Percent, not
         dollars, because a $0.08 beat means different things on $2 and $20 EPS.
@@ -40,7 +45,8 @@ DESIGN REASONING (author-owned decision: follow the FactSet convention)
         - Finnhub's four actuals sum to ~7.01 while yfinance trailingEps is
           7.91 (different definitions/timing). One-source rule: never mix them.
 
-AI DISCLOSURE: 
+AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
+modified by the author. Author-owned decisions are marked  # AUTHOR:.
 """
 from __future__ import annotations
 
@@ -56,6 +62,11 @@ EXPECTED_QUARTERS = 4
 # AUTHOR: how far our recomputed surprise may differ from Finnhub's own value
 # (in percentage points) before we flag the row.
 SURPRISE_TOLERANCE_PTS = 0.5
+# AUTHOR: below this |estimate| (USD per share) a percent surprise is not
+# meaningful. Real case: AADX estimate $0.0281 vs actual -$1.04 printed
+# -3801%, because dividing by a few cents blows any gap up. Analysts quote
+# the dollar gap in these cases. The beat/miss label is still given.
+MIN_ESTIMATE_FOR_PERCENT = 0.10
 
 
 class Quarter(TypedDict):
@@ -141,6 +152,9 @@ def build_earnings_history(ticker: str, rows: Any) -> EarningsHistory:
             result = _classify(actual, estimate)
             if estimate == 0:  # division undefined
                 gaps.append({"field": f"{label}.surprise_pct", "reason": "zero_estimate"})
+            elif abs(estimate) < MIN_ESTIMATE_FOR_PERCENT:  # percent would mislead
+                gaps.append({"field": f"{label}.surprise_pct",
+                             "reason": "near_zero_estimate"})
             else:
                 surprise = (actual - estimate) / abs(estimate) * 100
                 reported, _ = _num(row.get("surprisePercent"))

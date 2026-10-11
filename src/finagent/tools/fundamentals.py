@@ -8,7 +8,8 @@ AGENT DESIGN (rubric: Agent Design / Functions)
                 `gaps` tells the agent WHY a number is absent so it can
                 reason (re-fetch, lower confidence, or state a limitation).
 
-AI DISCLOSURE:  # AUTHOR:.
+AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
+modified by the author. Author-owned decisions are marked  # AUTHOR:.
 """
 from __future__ import annotations
 
@@ -22,8 +23,8 @@ class Gap(TypedDict):
     """Why a value is None. The agent reads `reason` to decide what to do."""
 
     field: str
-    reason: str  # missing | not_a_number | out_of_range |
-    #              negative_earnings | inputs_missing
+    reason: str  # missing | not_a_number | out_of_range | negative_earnings |
+    #              not_meaningful | inputs_missing
 
 
 class Fundamentals(TypedDict):
@@ -41,6 +42,10 @@ class Fundamentals(TypedDict):
 
 # Ratios that are meaningless when the company loses money.
 EARNINGS_DEPENDENT = {"trailingPE", "forwardPE", "pegRatio"}
+# Gap reasons that describe the COMPANY, not a data problem. A loss-making firm
+# has no meaningful P/E, so these must not lower confidence the way a missing
+# or unreliable value does (synthesis uses this).
+EXPECTED_GAP_REASONS = frozenset({"negative_earnings", "not_meaningful"})
 # AUTHOR: how far Yahoo's P/E may differ from price / EPS before we flag it.
 PE_MISMATCH_TOLERANCE = 0.05
 
@@ -151,6 +156,12 @@ def build_fundamentals(ticker: str, info: dict,
         if reason is not None:
             if spec.key in EARNINGS_DEPENDENT and loses_money:
                 reason = "negative_earnings"  # not a data problem: not meaningful
+            elif (reason == "out_of_range" and spec.group == "valuation"
+                  and spec.min_exclusive and spec.hard_min == 0
+                  and (info.get(spec.key) or 0) <= 0):
+                # e.g. EV/EBITDA when EBITDA is negative: the ratio is
+                # undefined, the data is fine.
+                reason = "not_meaningful"
             gaps.append({"field": spec.key, "reason": reason})
         if warning is not None:
             warnings.append(warning)
