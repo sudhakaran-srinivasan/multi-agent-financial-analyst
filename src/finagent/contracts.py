@@ -12,7 +12,8 @@ AGENT DESIGN (rubric: Agent Design / Functions)
                  outputs) is the fact base the evaluator checks numbers against.
 
     Flow:  ticker -> Profile -> Plan -> tool loop -> LoopResult
-                                   |        -> Analysis -> Evaluation
+                                   |        -> Reflection (fix-up) -> Analysis
+                                   |        -> Evaluation
                                    ^ NewsInsight list comes from Jeff's pipeline
 
 TypedDicts are plain dicts at runtime (json.dumps works); Literal types list
@@ -30,6 +31,9 @@ from typing import Any, Literal, TypedDict
 # Why the tool loop stopped: the model said it was finished, the step cap was
 # hit, or a core-data error (bad ticker, not a stock) ended the run.
 StopReason = Literal["done", "step_cap", "fatal_error"]
+# Why reflection retried a tool, and how the retry ended.
+RetryWhy = Literal["failed", "never_called", "fetch_failed"]
+RetryOutcome = Literal["recovered", "still_failing"]
 NewsCategory = Literal["earnings", "general", "market"]
 # Three labels, not a score: LLMs label consistently but invent false
 # precision with numbers; labels aggregate easily and map to +1/0/-1 later.
@@ -65,7 +69,9 @@ class Plan(TypedDict):
 class TraceStep(TypedDict):
     """One tool call, kept as the audit trail (the notebook shows these)."""
 
-    step: int  # 0 = the pre-flight profile check; 1..N = model turns
+    # 0 = pre-flight (profile, plan); 1..N = model turns; steps_used + 1 = the
+    # Python fix-up pass of reflection (not a model turn).
+    step: int
     tool: str
     arguments: dict[str, Any]
     ok: bool
@@ -92,6 +98,22 @@ class LoopResult(TypedDict):
     results: dict[str, Any]  # tool name -> latest successful structured output
     trace: list[TraceStep]  # every call in order, including failed ones
     fatal_error: str | None  # set only when stop_reason == "fatal_error"
+
+
+# ---- Reflection: fix-up pass between the loop and synthesis (Track A) -----
+class RetryRecord(TypedDict):
+    tool: str
+    why: RetryWhy  # failed | never_called (step cap) | fetch_failed (gap)
+    outcome: RetryOutcome
+    error: str | None  # the error text when the retry still failed
+
+
+class Reflection(TypedDict):
+    """What reflection did. Read by synthesis, the report and the notebook."""
+
+    retried: list[RetryRecord]  # at most one entry per tool
+    remaining_gaps: list[str]  # gaps after the fix-up (retrying cannot help)
+    summary: str  # one readable line
 
 
 # ---- Analysis: agent core -> evaluator (crosses A <-> C) -------------------

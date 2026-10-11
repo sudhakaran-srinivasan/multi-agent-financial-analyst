@@ -6,7 +6,12 @@ These are MOCKS to show the SHAPE. They are not investment analysis.
 from __future__ import annotations
 
 from finagent.contracts import (
-    Analysis, Evaluation, LoopResult, NewsInsight, Plan,
+    Analysis,
+    Evaluation,
+    LoopResult,
+    NewsInsight,
+    Plan,
+    Reflection,
 )
 
 SAMPLE_NEWS_INSIGHT: NewsInsight = {
@@ -112,4 +117,14 @@ SAMPLE_LOOP_RESULT: LoopResult = {
          "arguments": {"ticker": "NVDA"}, "ok": True, "error": None},
     ],
     "fatal_error": None,
+}
+
+
+SAMPLE_REFLECTION: Reflection = {
+    "retried": [
+        {"tool": "get_news_insights", "why": "failed",
+         "outcome": "still_failing", "error": "RuntimeError: NewsAPI timeout"},
+    ],
+    "remaining_gaps": ["get_news_insights: no result (RuntimeError: NewsAPI timeout)"],
+    "summary": "1 tool retried: 0 recovered, 1 still failing; 1 gap remains.",
 }

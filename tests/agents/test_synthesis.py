@@ -318,3 +318,25 @@ def test_news_urls_become_sources():
     outcome = synthesize(result, ScriptedClient(reply()))
     assert "https://example.com/a" in outcome.analysis["sources"]
     assert not any("no news" in g for g in outcome.analysis["data_gaps"])
+
+
+# ---- reflection as optional context ------------------------------------------
+REFLECTION = {"retried": [{"tool": "get_news_insights", "why": "failed",
+                           "outcome": "still_failing", "error": "RuntimeError: x"}],
+              "remaining_gaps": ["get_news_insights: no result (RuntimeError: x)"],
+              "summary": "1 tool retried: 0 recovered, 1 still failing; 1 gap remains."}
+
+
+def test_reflection_is_passed_to_the_model_and_noted():
+    client = ScriptedClient(reply())
+    outcome = synthesize(NVDA_RESULT, client, REFLECTION)
+    facts = json.loads(client.requests[0]["messages"][1]["content"])
+    assert facts["reflection"]["retried"][0]["tool"] == "get_news_insights"
+    assert any(n.startswith("reflection:") for n in outcome.notes)
+
+
+def test_synthesis_works_without_reflection():
+    client = ScriptedClient(reply())
+    outcome = synthesize(NVDA_RESULT, client)
+    assert json.loads(client.requests[0]["messages"][1]["content"])["reflection"] is None
+    assert not any(n.startswith("reflection:") for n in outcome.notes)

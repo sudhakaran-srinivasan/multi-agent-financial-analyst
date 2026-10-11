@@ -125,14 +125,14 @@ def test_analysis_text_shows_a_fallback_reason():
 def test_analyze_flag_runs_the_analyst_after_the_loop(capsys):
     seen = []
     code = main(["NVDA", "--analyze"], runner=lambda t: SAMPLE_LOOP_RESULT,
-                analyst=lambda r: seen.append(r) or OUTCOME)
+                analyst=lambda r, reflection=None: seen.append(r) or OUTCOME)
     out = capsys.readouterr().out
     assert code == 0 and seen == [SAMPLE_LOOP_RESULT]
     assert "stop: done" in out and "ANALYSIS" in out and DISCLAIMER in out
 
 
 def test_without_the_flag_no_analysis_is_run(capsys):
-    def boom(result):
+    def boom(result, reflection=None):
         raise AssertionError("analyst must not run")
 
     assert main(["NVDA"], runner=lambda t: SAMPLE_LOOP_RESULT, analyst=boom) == 0
@@ -140,7 +140,7 @@ def test_without_the_flag_no_analysis_is_run(capsys):
 
 
 def test_a_fatal_loop_skips_the_analysis(capsys):
-    def boom(result):
+    def boom(result, reflection=None):
         raise AssertionError("analyst must not run")
 
     code = main(["ZZZZZZ", "--analyze"], runner=lambda t: FATAL_RESULT, analyst=boom)
@@ -149,8 +149,58 @@ def test_a_fatal_loop_skips_the_analysis(capsys):
 
 def test_analyze_with_json_wraps_loop_and_analysis(capsys):
     main(["NVDA", "--analyze", "--json"], runner=lambda t: SAMPLE_LOOP_RESULT,
-         analyst=lambda r: OUTCOME)
+         analyst=lambda r, reflection=None: OUTCOME)
     payload = json.loads(capsys.readouterr().out)
     assert payload["loop"]["ticker"] == "NVDA"
     assert payload["analysis"]["stance"] == "bullish"
     assert payload["disclaimer"] == DISCLAIMER and payload["signals"]
+
+
+# ---- reflection in the entry point ------------------------------------------
+def test_reflection_runs_after_the_loop_and_is_shown(capsys):
+    from finagent.samples import SAMPLE_REFLECTION
+
+    seen = []
+
+    def reflector(result):
+        seen.append(result)
+        return result, SAMPLE_REFLECTION
+
+    assert main(["NVDA"], runner=lambda t: SAMPLE_LOOP_RESULT,
+                reflector=reflector) == 0
+    out = capsys.readouterr().out
+    assert seen == [SAMPLE_LOOP_RESULT]
+    assert "Reflection: 1 tool retried: 0 recovered, 1 still failing" in out
+    assert "retried get_news_insights [failed]: still_failing" in out
+
+
+def test_the_analyst_receives_the_updated_result_and_the_reflection(capsys):
+    from finagent.samples import SAMPLE_REFLECTION
+
+    updated = {**SAMPLE_LOOP_RESULT, "steps_used": 4}
+    got = {}
+
+    def analyst(result, reflection=None):
+        got.update(result=result, reflection=reflection)
+        return OUTCOME
+
+    main(["NVDA", "--analyze"], runner=lambda t: SAMPLE_LOOP_RESULT,
+         reflector=lambda r: (updated, SAMPLE_REFLECTION), analyst=analyst)
+    assert got["result"] is updated and got["reflection"] is SAMPLE_REFLECTION
+
+
+def test_a_fatal_loop_skips_reflection(capsys):
+    def boom(result):
+        raise AssertionError("reflector must not run")
+
+    assert main(["ZZZZZZ"], runner=lambda t: FATAL_RESULT, reflector=boom) == 1
+
+
+def test_json_includes_the_reflection(capsys):
+    from finagent.samples import SAMPLE_REFLECTION
+
+    main(["NVDA", "--json"], runner=lambda t: SAMPLE_LOOP_RESULT,
+         reflector=lambda r: (r, SAMPLE_REFLECTION))
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["ticker"] == "NVDA"
+    assert payload["reflection"]["retried"][0]["tool"] == "get_news_insights"

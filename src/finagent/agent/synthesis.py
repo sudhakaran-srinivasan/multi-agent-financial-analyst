@@ -41,6 +41,7 @@ from finagent.contracts import (
     Confidence,
     EvidenceItem,
     LoopResult,
+    Reflection,
     Stance,
 )
 from finagent.tools.fundamentals import EXPECTED_GAP_REASONS
@@ -91,6 +92,8 @@ norm (about 78% of S&P 500 companies), not a strength by itself.
 - For a company that loses money, P/E is not meaningful: judge survival (cash, \
 debt, cash burn) and growth instead.
 - Do not mention anything missing as if it were known. Python lists the gaps.
+- The reflection record says which failed tools were retried. Never rely on a \
+tool that is still failing.
 - Confidence is at most {ceiling}. Pick lower if the evidence conflicts.
 - This is an educational analysis, not personal investment advice.
 """
@@ -321,9 +324,16 @@ def _clean_risks(risks: Any) -> list[str]:
     return cleaned
 
 
-def synthesize(loop_result: LoopResult, client: Any) -> SynthesisOutcome:
+def _reflection_notes(reflection: Reflection | None) -> list[str]:
+    if reflection and reflection["retried"]:
+        return [f"reflection: {reflection['summary']}"]
+    return []
+
+
+def synthesize(loop_result: LoopResult, client: Any,
+               reflection: Reflection | None = None) -> SynthesisOutcome:
     """Write the Analysis for one finished research run. Never raises for
-    model or parsing problems."""
+    model or parsing problems. ``reflection`` is optional context."""
     ticker = loop_result["ticker"]
     results = loop_result["results"]
     signals = compute_signals(results)
@@ -333,12 +343,13 @@ def synthesize(loop_result: LoopResult, client: Any) -> SynthesisOutcome:
         analysis = insufficient_data_analysis(
             ticker, loop_result, ceiling_reason or "fundamentals are missing")
         return SynthesisOutcome(analysis, "no model call: fundamentals are "
-                                "missing", [], signals)
+                                "missing", _reflection_notes(reflection), signals)
 
     data_gaps = build_data_gaps(loop_result)
     prompt_facts = {
         "plan": loop_result["plan"], "profile": loop_result["profile"],
         "results": results, "signals": signals, "data_gaps": data_gaps,
+        "reflection": reflection,
     }
     try:
         response = client.chat.completions.create(
@@ -362,9 +373,9 @@ def synthesize(loop_result: LoopResult, client: Any) -> SynthesisOutcome:
         # API failure or an unusable reply: degrade to the rule-based view.
         analysis = rule_based_analysis(ticker, loop_result, signals)
         return SynthesisOutcome(analysis, f"{type(exc).__name__}: {exc}",
-                                [], signals)
+                                _reflection_notes(reflection), signals)
 
-    notes = list(dropped)
+    notes = _reflection_notes(reflection) + list(dropped)
     confidence = apply_ceiling(data["confidence"], ceiling)
     if confidence != data["confidence"]:
         notes.append(f"confidence lowered from {data['confidence']} to "
@@ -382,10 +393,11 @@ def synthesize(loop_result: LoopResult, client: Any) -> SynthesisOutcome:
     return SynthesisOutcome(analysis, None, notes, signals)
 
 
-def analyze_run(loop_result: LoopResult, client: Any = None) -> SynthesisOutcome:
+def analyze_run(loop_result: LoopResult, client: Any = None,
+                reflection: Reflection | None = None) -> SynthesisOutcome:
     """Convenience for entry points: builds the real client when none is given."""
     if client is None:
         from finagent.agent.loop import make_client
 
         client = make_client()
-    return synthesize(loop_result, client)
+    return synthesize(loop_result, client, reflection)

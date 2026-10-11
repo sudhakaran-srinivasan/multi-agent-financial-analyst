@@ -25,9 +25,10 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from finagent.agent.loop import run_research_loop
+from finagent.agent.reflection import reflect
 from finagent.agent.signals import Signal
 from finagent.agent.synthesis import DISCLAIMER, SynthesisOutcome, analyze_run
-from finagent.contracts import Analysis, LoopResult, Plan
+from finagent.contracts import Analysis, LoopResult, Plan, Reflection
 
 _MAX_ERROR_CHARS = 100
 
@@ -54,6 +55,18 @@ def _plan_lines(plan: Plan | None) -> list[str]:
     lines += [f"  {i}. {step['tool']}: {step['reason']}"
               for i, step in enumerate(plan["steps"], start=1)]
     lines.append(f"  Emphasis: {plan['priority_note']}")
+    return lines
+
+
+def _reflection_lines(reflection: Reflection | None) -> list[str]:
+    """Reflection as readable lines; empty when reflection did not run."""
+    if reflection is None:
+        return []
+    lines = ["", f"Reflection: {reflection['summary']}"]
+    for item in reflection["retried"]:
+        detail = f" ({item['error']})" if item["error"] else ""
+        lines.append(f"  retried {item['tool']} [{item['why']}]: "
+                     f"{item['outcome']}{detail}"[:160])
     return lines
 
 
@@ -137,11 +150,13 @@ def format_analysis(outcome: SynthesisOutcome) -> str:
 def main(
     argv: Sequence[str] | None = None,
     runner: Callable[[str], LoopResult] = run_research_loop,
-    analyst: Callable[[LoopResult], SynthesisOutcome] = analyze_run,
+    analyst: Callable[..., SynthesisOutcome] = analyze_run,
+    reflector: Callable[[LoopResult], tuple[LoopResult, Reflection]] = reflect,
 ) -> int:
     """Parse arguments, run the loop, print the report, return an exit code.
 
-    ``runner`` and ``analyst`` are injectable so tests need no model.
+    ``runner``, ``reflector`` and ``analyst`` are injectable so tests need no
+    model and no network.
     """
     parser = argparse.ArgumentParser(
         prog="python -m finagent.run_agent",
@@ -161,10 +176,15 @@ def main(
         return 2
 
     fatal = result["stop_reason"] == "fatal_error"
-    outcome = analyst(result) if args.analyze and not fatal else None
+    reflection: Reflection | None = None
+    if not fatal:  # fix what a retry can fix before anything is written
+        result, reflection = reflector(result)
+    outcome = analyst(result, reflection=reflection) if args.analyze and not fatal \
+        else None
 
     if args.json:
         payload: dict[str, Any] = {"loop": result} if args.analyze else dict(result)
+        payload["reflection"] = reflection
         if outcome is not None:
             payload.update(
                 analysis=outcome.analysis, signals=outcome.signals,
@@ -173,6 +193,7 @@ def main(
         print(json.dumps(payload, indent=2, default=str))
     else:
         print(format_report(result))
+        print("\n".join(_reflection_lines(reflection)))
         if outcome is not None:
             print(format_analysis(outcome))
     return 1 if fatal else 0
