@@ -195,9 +195,12 @@ def get_earnings_history(ticker: str, client: Any = None,
                          limit: int = EXPECTED_QUARTERS) -> EarningsHistory:
     """Fetch from Finnhub and build the history.
 
-    `client` can be injected for tests. Earnings are SECONDARY data: if the
-    call fails we degrade gracefully (a gap + warning) instead of crashing the
-    run. A missing API key is a setup error, so that one still raises.
+    `client` can be injected for tests. If the Finnhub call fails we RAISE,
+    so the dispatcher records ``ok=False`` in the trace and reflection can
+    retry. Returning a quiet gap here would make the trace say "success" while
+    no data arrived. (Empty data from a call that WORKED is not a failure; that
+    still flows through build_earnings_history as gaps.) A missing API key is
+    a setup error and raises too.
     """
     if client is None:
         import finnhub  # local import keeps build_earnings_history offline-testable
@@ -208,9 +211,7 @@ def get_earnings_history(ticker: str, client: Any = None,
         client = finnhub.Client(api_key=key)
     try:
         rows = client.company_earnings(ticker.strip().upper(), limit=limit)
-    except Exception as exc:  # tool boundary: report, don't crash the agent loop
-        result = build_earnings_history(ticker, [])
-        result["gaps"] = [{"field": "earnings_history", "reason": "fetch_failed"}]
-        result["warnings"].append(f"Finnhub call failed: {type(exc).__name__}: {exc}")
-        return result
+    except Exception as exc:  # noqa: BLE001  - re-raised with context
+        raise RuntimeError(
+            f"Finnhub call failed: {type(exc).__name__}: {exc}") from exc
     return build_earnings_history(ticker, rows)

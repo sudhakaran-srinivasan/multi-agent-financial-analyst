@@ -121,15 +121,13 @@ def test_finnhub_percent_disagreement_warns():
     assert any("differs from recomputed" in w for w in r["warnings"])
 
 
-def test_fetch_failure_degrades_gracefully():
+def test_fetch_failure_raises_so_the_trace_can_record_it():
     class Boom:
         def company_earnings(self, *a, **k):
             raise ConnectionError("network down")
 
-    r = get_earnings_history("NVDA", client=Boom())
-    assert r["summary"] is None
-    assert gap_reasons(r) == {"earnings_history": "fetch_failed"}
-    assert any("ConnectionError" in w for w in r["warnings"])
+    with pytest.raises(RuntimeError, match="ConnectionError"):
+        get_earnings_history("NVDA", client=Boom())
 
 
 def test_injected_client_is_used():
