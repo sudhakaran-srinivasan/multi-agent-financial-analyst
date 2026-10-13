@@ -4,10 +4,10 @@
     python -m finagent.run_agent NVDA --json     # full LoopResult as JSON
     python -m finagent.run_agent NVDA --analyze  # also write the analysis
 
-Why a separate file? The loop is a library function other code (the notebook,
-synthesis, tests) calls. This file is the thin "front door" for a human at a
-terminal: it parses the command line, calls the loop, prints a readable
-report, and returns an exit code.
+Why a separate file? The stages are chained in finagent.pipeline, a library
+function the notebook and the tests call too. This file is the thin "front
+door" for a human at a terminal: it parses the command line, calls the
+pipeline, prints a readable report, and returns an exit code.
 
 Exit codes: 0 = finished (done or step_cap), 1 = fatal_error (bad ticker,
 not a stock, or the model API failed), 2 = setup problem (for example a
@@ -29,6 +29,7 @@ from finagent.agent.reflection import reflect
 from finagent.agent.signals import Signal
 from finagent.agent.synthesis import DISCLAIMER, SynthesisOutcome, analyze_run
 from finagent.contracts import Analysis, LoopResult, Plan, Reflection
+from finagent.pipeline import StageError, run_pipeline, stage_error_payload
 
 _MAX_ERROR_CHARS = 100
 
@@ -114,9 +115,41 @@ def format_report(result: LoopResult) -> str:
     return "\n".join(lines)
 
 
-def _signal_line(signal: Signal) -> str:
-    marks = {"positive": "+", "neutral": "=", "negative": "-"}
-    return f"  [{marks[signal['direction']]}] {signal['name']}: {signal['why']}"
+_MARKS = {"positive": "[+]", "neutral": "[=]", "negative": "[-]"}
+
+
+def _format_value(value: float | str | None) -> str:
+    """Compact display for a signal value: 1.27B, 0.0452, n/a."""
+    if value is None:
+        return "n/a"
+    if isinstance(value, str):
+        return value
+    magnitude = abs(value)
+    for size, suffix in ((1e12, "T"), (1e9, "B"), (1e6, "M")):
+        if magnitude >= size:
+            return f"{value / size:.1f}{suffix}"
+    return f"{value:,.4g}"
+
+
+def format_scorecard(signals: list[Signal]) -> str:
+    """The signals as a table: what was measured, its value, how to read it.
+
+    Output layer only (the Analysis contract is untouched). The "Read" column
+    is the direction Python computed from documented thresholds, not a letter
+    grade: we do not invent a proprietary scale.
+    """
+    if not signals:
+        return "  (no signals)"
+    name_w = max(len("Signal"), *(len(s["name"]) for s in signals))
+    value_w = max(len("Value"), *(len(_format_value(s["value"])) for s in signals))
+    lines = [f"  {'Signal':<{name_w}}  {'Value':>{value_w}}  Read  Why",
+             f"  {'-' * name_w}  {'-' * value_w}  ----  ---"]
+    lines += [
+        f"  {s['name']:<{name_w}}  {_format_value(s['value']):>{value_w}}  "
+        f"{_MARKS[s['direction']]}  {s['why']}"
+        for s in signals
+    ]
+    return "\n".join(lines)
 
 
 def format_analysis(outcome: SynthesisOutcome) -> str:
@@ -129,9 +162,9 @@ def format_analysis(outcome: SynthesisOutcome) -> str:
         "",
         analysis["thesis"],
         "",
-        "Signals computed by Python ([+] positive, [=] neutral, [-] negative):",
+        "Scorecard (computed by Python; [+] positive, [=] neutral, [-] negative):",
+        format_scorecard(outcome.signals),
     ]
-    lines += [_signal_line(s) for s in outcome.signals] or ["  (none)"]
     lines += ["", "Evidence:"]
     lines += [f"  - {e['claim']} = {e['value']}  <{e['source']}>"
               for e in analysis["evidence_used"]] or ["  (none)"]
@@ -147,13 +180,19 @@ def format_analysis(outcome: SynthesisOutcome) -> str:
     return "\n".join(lines)
 
 
+def _stage_error_lines(errors: list[StageError]) -> list[str]:
+    """Stage failures as readable lines; empty when every stage ran."""
+    return ["", "STAGE ERRORS (the run continued without these):"] + [
+        f"  {e.stage}: {e.error}" for e in errors] if errors else []
+
+
 def main(
     argv: Sequence[str] | None = None,
     runner: Callable[[str], LoopResult] = run_research_loop,
     analyst: Callable[..., SynthesisOutcome] = analyze_run,
     reflector: Callable[[LoopResult], tuple[LoopResult, Reflection]] = reflect,
 ) -> int:
-    """Parse arguments, run the loop, print the report, return an exit code.
+    """Parse arguments, run the pipeline, print the report, return an exit code.
 
     ``runner``, ``reflector`` and ``analyst`` are injectable so tests need no
     model and no network.
@@ -170,33 +209,29 @@ def main(
     args = parser.parse_args(argv)
 
     try:
-        result = runner(args.ticker)
+        run = run_pipeline(args.ticker, analyze=args.analyze, runner=runner,
+                           reflector=reflector, analyst=analyst)
     except RuntimeError as exc:  # for example a missing API key
         print(f"Setup problem: {exc}", file=sys.stderr)
         return 2
 
-    fatal = result["stop_reason"] == "fatal_error"
-    reflection: Reflection | None = None
-    if not fatal:  # fix what a retry can fix before anything is written
-        result, reflection = reflector(result)
-    outcome = analyst(result, reflection=reflection) if args.analyze and not fatal \
-        else None
-
     if args.json:
-        payload: dict[str, Any] = {"loop": result} if args.analyze else dict(result)
-        payload["reflection"] = reflection
-        if outcome is not None:
+        payload: dict[str, Any] = {"loop": run.loop} if args.analyze else dict(run.loop)
+        payload["reflection"] = run.reflection
+        payload["stage_errors"] = stage_error_payload(run.stage_errors)
+        if run.outcome is not None:
             payload.update(
-                analysis=outcome.analysis, signals=outcome.signals,
-                analysis_fallback=outcome.fallback_reason, analysis_notes=outcome.notes,
-                disclaimer=DISCLAIMER)
+                analysis=run.outcome.analysis, signals=run.outcome.signals,
+                analysis_fallback=run.outcome.fallback_reason,
+                analysis_notes=run.outcome.notes, disclaimer=DISCLAIMER)
         print(json.dumps(payload, indent=2, default=str))
     else:
-        print(format_report(result))
-        print("\n".join(_reflection_lines(reflection)))
-        if outcome is not None:
-            print(format_analysis(outcome))
-    return 1 if fatal else 0
+        print(format_report(run.loop))
+        print("\n".join(_reflection_lines(run.reflection)))
+        if run.outcome is not None:
+            print(format_analysis(run.outcome))
+        print("\n".join(_stage_error_lines(run.stage_errors)))
+    return 1 if run.fatal else 0
 
 
 if __name__ == "__main__":

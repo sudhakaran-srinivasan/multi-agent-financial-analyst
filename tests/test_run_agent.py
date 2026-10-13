@@ -110,7 +110,7 @@ OUTCOME = SynthesisOutcome(
 def test_analysis_text_shows_every_section_and_the_disclaimer():
     text = format_analysis(OUTCOME)
     assert "stance: bullish" in text and "confidence: medium" in text
-    assert "[+] net_cash" in text
+    assert "net_cash" in text and "[+]" in text and "Value" in text
     assert "Forward P/E = 15.1  <get_fundamentals.valuation.forwardPE>" in text
     assert "Risks:" in text and "Data gaps:" in text and "Sources:" in text
     assert "confidence lowered from high to medium" in text
@@ -204,3 +204,49 @@ def test_json_includes_the_reflection(capsys):
     payload = json.loads(capsys.readouterr().out)
     assert payload["ticker"] == "NVDA"
     assert payload["reflection"]["retried"][0]["tool"] == "get_news_insights"
+
+
+# ---- scorecard and stage errors ---------------------------------------------
+def test_scorecard_is_a_table_with_value_read_and_why():
+    from finagent.run_agent import format_scorecard
+
+    signals = [
+        {"name": "fcf_yield", "direction": "negative", "value": -0.066,
+         "source": "x", "why": "burns cash"},
+        {"name": "net_cash", "direction": "positive", "value": 2.4e10,
+         "source": "x", "why": "cash exceeds debt"},
+        {"name": "trend", "direction": "neutral", "value": None,
+         "source": "x", "why": "no data"},
+    ]
+    text = format_scorecard(signals)
+    assert "Signal" in text and "Value" in text and "Read" in text
+    assert "-0.066  [-]  burns cash" in text
+    assert "24.0B  [+]  cash exceeds debt" in text
+    assert "n/a  [=]  no data" in text
+
+
+def test_scorecard_with_no_signals_says_so():
+    from finagent.run_agent import format_scorecard
+
+    assert "no signals" in format_scorecard([])
+
+
+def test_a_crashing_analyst_prints_a_stage_error_and_still_exits_zero(capsys):
+    def boom(result, reflection=None):
+        raise ValueError("kaboom")
+
+    code = main(["NVDA", "--analyze"], runner=lambda t: SAMPLE_LOOP_RESULT,
+                reflector=lambda r: (r, None), analyst=boom)
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "STAGE ERRORS" in out and "synthesize: ValueError: kaboom" in out
+
+
+def test_json_lists_stage_errors(capsys):
+    def boom(result):
+        raise ValueError("kaboom")
+
+    main(["NVDA", "--json"], runner=lambda t: SAMPLE_LOOP_RESULT, reflector=boom)
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage_errors"] == [
+        {"stage": "reflect", "error": "ValueError: kaboom"}]
