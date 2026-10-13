@@ -211,7 +211,7 @@ def get_earnings_history(ticker: str, client: Any = None,
         client = finnhub.Client(api_key=key)
     try:
         rows = client.company_earnings(ticker.strip().upper(), limit=limit)
-    except Exception as exc:  # noqa: BLE001  - re-raised with context
+    except Exception as exc:
         raise RuntimeError(
             f"Finnhub call failed: {type(exc).__name__}: {exc}") from exc
     return build_earnings_history(ticker, rows)
