@@ -32,6 +32,7 @@ from __future__ import annotations
 import json
 import math
 from dataclasses import dataclass, field
+from datetime import UTC, date, datetime
 from typing import Any
 
 from finagent import config
@@ -46,6 +47,7 @@ from finagent.contracts import (
 )
 from finagent.tools.fundamentals import EXPECTED_GAP_REASONS
 from finagent.tools.registry import REGISTRY
+from finagent.workflows.news_ingest import LOOKBACK_DAYS
 
 DISCLAIMER = ("Educational analysis produced by a course project. "
               "Not investment advice.")
@@ -114,8 +116,21 @@ def _is_expected(reason: str) -> bool:
     return reason in _EXPECTED_REASONS
 
 
-def build_data_gaps(loop_result: LoopResult) -> list[str]:
+def _news_age_days(news: list[Any], today: date) -> int | None:
+    """Age in days of the NEWEST news item, or None if no item has a usable date."""
+    ages: list[int] = []
+    for item in news:
+        stamp = item.get("published") if isinstance(item, dict) else None
+        try:
+            ages.append((today - date.fromisoformat(stamp)).days)
+        except (TypeError, ValueError):
+            continue
+    return min(ages) if ages else None
+
+
+def build_data_gaps(loop_result: LoopResult, today: date | None = None) -> list[str]:
     """What is missing or unreliable, built from tool output (never the model)."""
+    today = today or datetime.now(UTC).date()
     results = loop_result["results"]
     gaps: list[str] = []
 
@@ -136,6 +151,11 @@ def build_data_gaps(loop_result: LoopResult) -> list[str]:
     news = results.get("get_news_insights")
     if isinstance(news, list) and not news:
         gaps.append("get_news_insights: no news insights available")
+    elif isinstance(news, list):
+        age = _news_age_days(news, today)
+        if age is not None and age > LOOKBACK_DAYS:
+            gaps.append(f"get_news_insights: stale, the newest article is "
+                        f"{age} days old")
 
     failures = {step["tool"]: step["error"] for step in loop_result["trace"]
                 if not step["ok"] and step["error"]}

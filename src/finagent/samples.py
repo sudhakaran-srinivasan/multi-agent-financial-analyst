@@ -19,6 +19,7 @@ SAMPLE_NEWS_INSIGHT: NewsInsight = {
     "summary": "NVIDIA reported quarterly EPS above analyst estimates.",
     "sentiment": "positive",
     "source_url": "https://example.com/nvda-earnings",
+    "published": "2026-10-10",
 }
 
 SAMPLE_PLAN: Plan = {

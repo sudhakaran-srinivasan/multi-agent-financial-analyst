@@ -340,3 +340,39 @@ def test_synthesis_works_without_reflection():
     outcome = synthesize(NVDA_RESULT, client)
     assert json.loads(client.requests[0]["messages"][1]["content"])["reflection"] is None
     assert not any(n.startswith("reflection:") for n in outcome.notes)
+
+
+# ---- stale news --------------------------------------------------------------
+def _with_news(items):
+    return {**AADX_RESULT, "results": {**AADX_RESULT["results"],
+                                       "get_news_insights": items}}
+
+
+def _news(published):
+    return {"category": "general", "summary": "s", "sentiment": "neutral",
+            "source_url": "https://x", "published": published}
+
+
+def test_old_news_is_listed_as_a_stale_gap():
+    from datetime import date
+
+    gaps = build_data_gaps(_with_news([_news("2026-07-20"), _news("2026-08-01")]),
+                           today=date(2026, 10, 13))
+    assert any("stale" in g and "73 days old" in g for g in gaps)
+
+
+def test_fresh_news_is_not_a_gap():
+    from datetime import date
+
+    gaps = build_data_gaps(_with_news([_news("2026-10-12"), _news("2026-07-01")]),
+                           today=date(2026, 10, 13))
+    assert not any("get_news_insights" in g for g in gaps)
+
+
+def test_news_without_a_usable_date_is_not_flagged_stale():
+    from datetime import date
+
+    item = {k: v for k, v in _news("x").items() if k != "published"}
+    gaps = build_data_gaps(_with_news([item, _news("not a date")]),
+                           today=date(2026, 10, 13))
+    assert not any("stale" in g for g in gaps)

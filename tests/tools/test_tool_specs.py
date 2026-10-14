@@ -37,5 +37,7 @@ def test_profile_is_not_on_the_menu():
     assert "get_company_profile" not in _names()
 
 
-def test_news_stub_returns_an_empty_list_not_mock_text():
-    assert get_news_insights("NVDA") == []
+def test_news_tool_is_the_real_wrapper_not_a_stub():
+    # Behaviour is covered offline in tests/tools/test_news.py (injected
+    # fetcher); here we only check the registry points at the real function.
+    assert TOOL_FUNCTIONS["get_news_insights"] is get_news_insights

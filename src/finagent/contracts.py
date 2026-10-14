@@ -51,6 +51,7 @@ class NewsInsight(TypedDict):
     summary: str  # written by the routed specialist
     sentiment: Sentiment
     source_url: str  # so the final analysis can cite it
+    published: str  # ISO date (YYYY-MM-DD) so staleness can be judged
 
 
 # ---- Plan: planner -> tool loop (internal to Track A) ----------------------

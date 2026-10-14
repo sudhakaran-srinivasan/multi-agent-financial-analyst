@@ -84,7 +84,7 @@ def test_the_chain_runs_extract_then_summarize_and_returns_a_news_insight():
     insight = make_llm_analyzer(client)(art(), "earnings", SUBJECT)
     assert insight == NewsInsight(
         category="earnings", summary="AADX reported Q2 revenue of $87.5 million.",
-        sentiment="positive", source_url="https://x/1")
+        sentiment="positive", source_url="https://x/1", published="2026-10-13")
     assert len(client.requests) == 2
     assert all(r["temperature"] == config.TEMPERATURE for r in client.requests)
 
@@ -180,7 +180,8 @@ def fake_analyzer(article, category, subject):
     if article.headline == "bad":
         raise SpecialistError("nope")
     return NewsInsight(category=category, summary=article.headline,
-                       sentiment="neutral", source_url=article.url)
+                       sentiment="neutral", source_url=article.url,
+                       published="2026-10-13")
 
 
 def test_build_insights_keeps_order_and_skips_one_failure():

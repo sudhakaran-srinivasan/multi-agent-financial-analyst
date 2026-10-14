@@ -203,7 +203,8 @@ def make_llm_analyzer(client: Any) -> Analyzer:
                 "Key facts:\n" + "\n".join(f"- {f}" for f in facts)),
             article)
         return NewsInsight(category=category, summary=summary,
-                           sentiment=sentiment, source_url=article.url)
+                           sentiment=sentiment, source_url=article.url,
+                           published=article.published.date().isoformat())
 
     return analyze
 
