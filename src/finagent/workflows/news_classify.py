@@ -37,7 +37,7 @@ from typing import Any, Literal, get_args
 
 from finagent import config
 from finagent.contracts import NewsCategory
-from finagent.workflows.news_ingest import Article
+from finagent.workflows.news_ingest import MAX_ARTICLES, Article
 
 Label = Literal["earnings", "market", "general", "irrelevant"]
 LABELS: tuple[str, ...] = get_args(Label)
@@ -83,8 +83,13 @@ class ClassifiedBatch:
     """Articles that passed classification, plus what was dropped and why."""
 
     items: list[tuple[Article, NewsCategory]] = field(default_factory=list)
-    irrelevant: int = 0  # dropped on purpose
+    dropped: list[Article] = field(default_factory=list)  # irrelevant, kept for audit
     failed: int = 0  # dropped because classification failed
+    unchecked: int = 0  # never classified: we already had enough relevant items
+
+    @property
+    def irrelevant(self) -> int:
+        return len(self.dropped)
 
 
 def parse_label(text: str) -> Label:
@@ -141,27 +146,37 @@ def make_llm_classifier(client: Any) -> Classifier:
 
 
 def classify_articles(articles: list[Article], subject: str,
-                      classifier: Classifier) -> ClassifiedBatch:
-    """Label every article; drop irrelevant ones; skip (and count) failures.
+                      classifier: Classifier,
+                      keep: int = MAX_ARTICLES) -> ClassifiedBatch:
+    """Label articles in order until ``keep`` relevant ones are found.
 
-    Raises NewsClassifyError only if there were articles and ALL of them
+    Irrelevant ones are dropped (and listed in ``dropped`` for audit); failures
+    are skipped and counted. Stopping at ``keep`` saves calls, and the rest
+    are counted in ``unchecked``.
+
+    Raises NewsClassifyError only if articles were attempted and ALL of them
     failed, because that means the classifier itself is broken. One bad
     article must not cost us the others.
     """
     batch = ClassifiedBatch()
-    for article in articles:
+    attempted = 0
+    for index, article in enumerate(articles):
+        if len(batch.items) >= keep:
+            batch.unchecked = len(articles) - index
+            break
+        attempted += 1
         try:
             label = classifier(article, subject)
         except Exception:  # noqa: BLE001 - per-article failure is counted, not fatal
             batch.failed += 1
             continue
         if label == "irrelevant":
-            batch.irrelevant += 1
+            batch.dropped.append(article)
         elif label in LABELS:
             batch.items.append((article, label))  # type: ignore[arg-type]
         else:  # a custom classifier returned something outside the label set
             batch.failed += 1
-    if articles and batch.failed == len(articles):
+    if attempted and batch.failed == attempted:
         raise NewsClassifyError(
-            f"all {len(articles)} articles failed to classify")
+            f"all {attempted} articles failed to classify")
     return batch

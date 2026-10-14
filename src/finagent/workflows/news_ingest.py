@@ -35,7 +35,12 @@ LOOKBACK_DAYS = 14
 # AUTHOR: thin-coverage companies (small caps) get one wider look, flagged stale.
 WIDE_LOOKBACK_DAYS = 90
 MIN_ARTICLES = 3  # fewer than this in the short window triggers the wider look
-MAX_ARTICLES = 8  # cost cap: each kept article costs several LLM calls
+# AUTHOR: two caps. Finnhub tags a mega-cap's feed loosely (Nvidia's newest
+# items included Deere, Lilly and Citigroup), so we classify a LARGER pool
+# (cheap one-call-per-article) and keep only the first MAX_ARTICLES relevant
+# ones (the expensive extract + summarize chain runs on those).
+MAX_CANDIDATES = 20  # articles passed to the classifier
+MAX_ARTICLES = 8  # relevant articles kept for the specialists
 MAX_SUMMARY_CHARS = 500  # vendor summaries are short; this guards odd outliers
 
 _TAG = re.compile(r"<[^>]+>")
@@ -143,7 +148,7 @@ def _fingerprint(headline: str) -> str:
 
 
 def preprocess(articles: list[Article], *, now: datetime, max_age_days: int,
-               max_articles: int = MAX_ARTICLES) -> list[Article]:
+               max_articles: int = MAX_CANDIDATES) -> list[Article]:
     """Clean, drop old and duplicate items, keep the newest ``max_articles``."""
     cutoff = now - timedelta(days=max_age_days)
     newest_first = sorted(articles, key=lambda a: a.published, reverse=True)
@@ -165,20 +170,58 @@ def preprocess(articles: list[Article], *, now: datetime, max_age_days: int,
     return kept
 
 
-def select_articles(articles: list[Article], *, now: datetime) -> NewsBatch:
+_COMPANY_SUFFIXES = frozenset({
+    "inc", "corp", "corporation", "co", "company", "ltd", "limited", "plc",
+    "holdings", "group", "the", "&", "and", "llc", "sa", "nv"})
+
+
+def name_terms(ticker: str, company_name: str | None) -> tuple[str, ...]:
+    """Lower-case search terms for a company: its ticker and a short name.
+
+    "Applied Aerospace & Defense, Inc." gives "applied aerospace"; "NVIDIA
+    Corporation" gives "nvidia". Used only to RANK articles, never to drop them.
+    """
+    terms = [ticker.strip().lower()]
+    words = [w for w in re.split(r"[^a-z0-9]+", (company_name or "").lower())
+             if w and w not in _COMPANY_SUFFIXES]
+    if words:
+        terms.append(" ".join(words[:2]))
+    return tuple(dict.fromkeys(t for t in terms if t))
+
+
+def mentions_company(article: Article, terms: tuple[str, ...]) -> bool:
+    """True if the headline or summary names the company or its ticker."""
+    text = f"{article.headline} {article.summary}".lower()
+    return any(re.search(rf"\b{re.escape(term)}\b", text) for term in terms)
+
+
+def rank_candidates(articles: list[Article],
+                    terms: tuple[str, ...]) -> list[Article]:
+    """Articles naming the company first; newest-first order kept within groups.
+
+    This is a stable sort, so it only moves likely-relevant items forward. A
+    market story that never names the company is still a candidate.
+    """
+    return sorted(articles, key=lambda a: not mentions_company(a, terms))
+
+
+def select_articles(articles: list[Article], *, now: datetime,
+                    terms: tuple[str, ...] = ()) -> NewsBatch:
     """Prefer the short window; widen once if coverage is thin."""
     short = preprocess(articles, now=now, max_age_days=LOOKBACK_DAYS)
     if len(short) >= MIN_ARTICLES:
-        return NewsBatch(short, LOOKBACK_DAYS, widened=False)
+        return NewsBatch(rank_candidates(short, terms), LOOKBACK_DAYS, widened=False)
     wide = preprocess(articles, now=now, max_age_days=WIDE_LOOKBACK_DAYS)
     if len(wide) > len(short):
-        return NewsBatch(wide, WIDE_LOOKBACK_DAYS, widened=True)
-    return NewsBatch(short, LOOKBACK_DAYS, widened=False)
+        return NewsBatch(rank_candidates(wide, terms), WIDE_LOOKBACK_DAYS,
+                         widened=True)
+    return NewsBatch(rank_candidates(short, terms), LOOKBACK_DAYS, widened=False)
 
 
 def collect_articles(ticker: str, *, client: Any = None,
-                     now: datetime | None = None) -> NewsBatch:
+                     now: datetime | None = None,
+                     company_name: str | None = None) -> NewsBatch:
     """Ingest + preprocess in one call: the input to the Classify station."""
     now = now or datetime.now(UTC)
     raw = fetch_articles(ticker, client=client, now=now)
-    return select_articles(raw, now=now)
+    return select_articles(raw, now=now, terms=name_terms(ticker, company_name))

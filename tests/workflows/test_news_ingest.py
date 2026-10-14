@@ -14,15 +14,18 @@ import pytest
 
 from finagent.workflows.news_ingest import (
     LOOKBACK_DAYS,
-    MAX_ARTICLES,
+    MAX_CANDIDATES,
     WIDE_LOOKBACK_DAYS,
     Article,
     NewsFetchError,
     clean_text,
     collect_articles,
     fetch_articles,
+    mentions_company,
+    name_terms,
     parse_article,
     preprocess,
+    rank_candidates,
     select_articles,
 )
 
@@ -143,9 +146,9 @@ def test_preprocess_drops_stale_and_future_items():
 
 
 def test_preprocess_sorts_newest_first_and_caps():
-    items = [article(f"story {i}", days_ago=i / 10) for i in range(1, 20)]
+    items = [article(f"story {i}", days_ago=i / 10) for i in range(1, 40)]
     out = preprocess(items, now=NOW, max_age_days=14)
-    assert len(out) == MAX_ARTICLES
+    assert len(out) == MAX_CANDIDATES
     assert out == sorted(out, key=lambda a: a.published, reverse=True)
     assert out[0].headline == "story 1"
 
@@ -197,3 +200,44 @@ def test_collect_articles_runs_fetch_then_select():
     client = FakeClient([row(f"story {i}", days_ago=i) for i in range(1, 5)])
     batch = collect_articles("NVDA", client=client, now=NOW)
     assert len(batch.articles) == 4 and len(client.calls) == 1
+
+
+# ---- ranking: likely-relevant first -------------------------------------------
+@pytest.mark.parametrize("ticker, name, expected", [
+    ("NVDA", "NVIDIA Corporation", ("nvda", "nvidia")),
+    ("AADX", "Applied Aerospace & Defense, Inc.", ("aadx", "applied aerospace")),
+    ("KO", "The Coca-Cola Company", ("ko", "coca cola")),
+    ("NVDA", None, ("nvda",)),
+])
+def test_name_terms_gives_ticker_and_short_company_name(ticker, name, expected):
+    assert name_terms(ticker, name) == expected
+
+
+def test_mentions_company_uses_whole_words():
+    terms = ("nvda", "nvidia")
+    assert mentions_company(article("Nvidia unveils chip"), terms)
+    assert mentions_company(article("Chip stocks (NVDA) rise"), terms)
+    assert mentions_company(article("Stocks", summary="Nvidia led gains"), terms)
+    assert not mentions_company(article("Deere vs Caterpillar"), terms)
+    assert not mentions_company(article("Nvidiafan blog"), terms)
+
+
+def test_rank_moves_mentions_first_and_keeps_newest_first_within_groups():
+    items = [article("Deere news", 1), article("Nvidia beats", 2),
+             article("Fed holds rates", 3), article("NVDA rallies", 4)]
+    ranked = rank_candidates(items, ("nvda", "nvidia"))
+    assert [a.headline for a in ranked] == [
+        "Nvidia beats", "NVDA rallies", "Deere news", "Fed holds rates"]
+
+
+def test_rank_never_drops_articles():
+    items = [article("Deere news", 1), article("Fed holds rates", 2)]
+    assert len(rank_candidates(items, ("nvda",))) == 2
+
+
+def test_collect_articles_ranks_with_the_company_name():
+    client = FakeClient([row("Deere beats", 1), row("Nvidia unveils chip", 2),
+                         row("Fed holds", 3)])
+    batch = collect_articles("NVDA", client=client, now=NOW,
+                             company_name="NVIDIA Corporation")
+    assert batch.articles[0].headline == "Nvidia unveils chip"

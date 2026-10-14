@@ -158,3 +158,29 @@ def test_all_articles_irrelevant_is_not_an_error():
     batch = classify_articles([art("a"), art("b")], SUBJECT,
                               lambda article, subject: "irrelevant")
     assert batch.items == [] and batch.irrelevant == 2
+
+
+def test_classification_stops_once_enough_relevant_articles_are_found():
+    calls = []
+
+    def count(article, subject):
+        calls.append(article.headline)
+        return "general"
+
+    batch = classify_articles([art(str(i)) for i in range(10)], SUBJECT, count, keep=3)
+    assert len(batch.items) == 3 and len(calls) == 3
+    assert batch.unchecked == 7
+
+
+def test_irrelevant_noise_does_not_use_up_the_keep_quota():
+    labels = {"n1": "irrelevant", "n2": "irrelevant", "n3": "irrelevant",
+              "r1": "earnings", "r2": "market"}
+    batch = classify_articles([art(h) for h in labels], SUBJECT,
+                              by_headline(labels), keep=2)
+    assert [a.headline for a, _ in batch.items] == ["r1", "r2"]
+    assert [a.headline for a in batch.dropped] == ["n1", "n2", "n3"]
+
+
+def test_dropped_articles_are_kept_for_audit():
+    batch = classify_articles([art("noise")], SUBJECT, lambda a, s: "irrelevant")
+    assert batch.dropped[0].headline == "noise" and batch.irrelevant == 1
