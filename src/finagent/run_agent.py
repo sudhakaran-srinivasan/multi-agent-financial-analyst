@@ -37,6 +37,11 @@ from finagent.pipeline import (
     run_pipeline,
     stage_error_payload,
 )
+from finagent.workflows.evaluator_optimizer import (
+    EvaluationRun,
+    evaluate_run,
+    to_evaluation,
+)
 
 _MAX_ERROR_CHARS = 100
 
@@ -193,6 +198,26 @@ def _stage_error_lines(errors: list[StageError]) -> list[str]:
         f"  {e.stage}: {e.error}" for e in errors] if errors else []
 
 
+def _evaluation_lines(run: EvaluationRun | None) -> list[str]:
+    """The evaluator's work as readable lines; empty when it did not run."""
+    if run is None:
+        return []
+    if not run.evaluated:
+        return ["", "Evaluation: not evaluated (" + run.stopped_because + ")"]
+    best = run.best
+    status = "PASSED" if run.passed else "DID NOT PASS"
+    lines = ["", (f"Evaluation: {status}  |  score {best.overall:.2f}/5"
+                  f"  |  revisions: {run.revisions}"
+                  f"  |  {run.stopped_because}")]
+    lines += [f"  {r.label:<11} {r.verdict:<6} {r.overall:.2f}  "
+              + " ".join(f"{s['score']}" for s in r.judgment.scores)
+              for r in run.rounds]
+    lines.append("  (scores in order: " + ", ".join(
+        s["criterion"] for s in best.judgment.scores) + ")")
+    lines += [f"  critical: {c}" for c in best.judgment.critical_issues]
+    return lines
+
+
 def _memory_lines(run: PipelineResult) -> list[str]:
     """What memory did this run: compared with a prior run, or first of its kind."""
     if run.changes is not None:
@@ -208,6 +233,7 @@ def main(
     analyst: Callable[..., SynthesisOutcome] = analyze_run,
     reflector: Callable[[LoopResult], tuple[LoopResult, Reflection]] = reflect,
     memory_path: Path = DEFAULT_PATH,
+    evaluator: Callable[..., EvaluationRun] = evaluate_run,
 ) -> int:
     """Parse arguments, run the pipeline, print the report, return an exit code.
 
@@ -223,6 +249,8 @@ def main(
                         help="print the full result as JSON")
     parser.add_argument("--analyze", action="store_true",
                         help="after the data loop, write the analysis")
+    parser.add_argument("--evaluate", action="store_true",
+                        help="judge the analysis and let it be revised (needs --analyze)")
     parser.add_argument("--no-memory", action="store_true",
                         help="do not read or write the run memory file")
     args = parser.parse_args(argv)
@@ -230,7 +258,9 @@ def main(
     try:
         run = run_pipeline(args.ticker, analyze=args.analyze, runner=runner,
                            reflector=reflector, analyst=analyst,
-                           memory_path=None if args.no_memory else memory_path)
+                           memory_path=None if args.no_memory else memory_path,
+                           evaluator=evaluator if args.evaluate and args.analyze
+                           else None)
     except RuntimeError as exc:  # for example a missing API key
         print(f"Setup problem: {exc}", file=sys.stderr)
         return 2
@@ -239,6 +269,7 @@ def main(
         payload: dict[str, Any] = {"loop": run.loop} if args.analyze else dict(run.loop)
         payload["reflection"] = run.reflection
         payload["stage_errors"] = stage_error_payload(run.stage_errors)
+        payload["evaluation"] = to_evaluation(run.evaluation) if run.evaluation else None
         payload["memory"] = {"saved": run.saved, "prior": run.prior,
                              "changes": run.changes}
         if run.outcome is not None:
@@ -252,6 +283,7 @@ def main(
         print("\n".join(_reflection_lines(run.reflection)))
         if run.outcome is not None:
             print(format_analysis(run.outcome))
+            print("\n".join(_evaluation_lines(run.evaluation)))
             print("\n".join(_memory_lines(run)))
         print("\n".join(_stage_error_lines(run.stage_errors)))
     return 1 if run.fatal else 0

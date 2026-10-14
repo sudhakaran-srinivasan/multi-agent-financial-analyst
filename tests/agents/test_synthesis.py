@@ -376,3 +376,37 @@ def test_news_without_a_usable_date_is_not_flagged_stale():
     gaps = build_data_gaps(_with_news([item, _news("not a date")]),
                            today=date(2026, 10, 13))
     assert not any("stale" in g for g in gaps)
+
+
+# ---- revision (the evaluator-optimizer's reviser) -------------------------------
+def test_feedback_reaches_the_model_as_data_with_the_previous_draft():
+    client = ScriptedClient(reply())
+    previous = synthesize(NVDA_RESULT, ScriptedClient(reply())).analysis
+    synthesize(NVDA_RESULT, client, feedback=["add a second risk"], previous=previous)
+    system, user = client.requests[0]["messages"]
+    assert "REVISION" in system["content"]
+    facts = json.loads(user["content"])
+    assert facts["reviewer_feedback"] == ["add a second risk"]
+    assert facts["previous_draft"]["thesis"] == previous["thesis"]
+
+
+def test_a_first_draft_prompt_has_no_revision_block():
+    client = ScriptedClient(reply())
+    synthesize(NVDA_RESULT, client)
+    system, user = client.requests[0]["messages"]
+    assert "REVISION" not in system["content"]
+    assert "reviewer_feedback" not in json.loads(user["content"])
+
+
+def test_a_revision_still_goes_through_the_python_checks():
+    client = ScriptedClient(reply(confidence="high", evidence_used=[
+        {"claim": "Forward P/E", "value": 99.0,
+         "source": "get_fundamentals.valuation.forwardPE"}] + reply_evidence_ok()))
+    outcome = synthesize(AADX_RESULT, client, feedback=["be bolder"])
+    assert outcome.analysis["confidence"] != "high"  # ceiling still applies
+    assert all(e["value"] != 99.0 for e in outcome.analysis["evidence_used"])
+
+
+def reply_evidence_ok():
+    return [{"claim": "Beats", "value": 0,
+             "source": "get_earnings_history.summary.beats"}]

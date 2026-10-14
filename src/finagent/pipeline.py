@@ -20,7 +20,7 @@ AGENT DESIGN (rubric: Agent Design / Functions)
         reflect             Python retries what a retry can fix (code decides)
         memory read         prior view of this ticker, as context only
         synthesize          signals + thesis + Python checks    (model + Python)
-        [evaluate]          evaluator-optimizer loop, max 2 rounds
+        evaluate            evaluator-optimizer loop, max 2 rounds (optional)
         memory write        append the final analysis with a timestamp
 
     Failure policy (AUTHOR: decision, see "Partial results" below):
@@ -52,11 +52,13 @@ from finagent.memory import (
     record_from_outcome,
     save_run,
 )
+from finagent.workflows.evaluator_optimizer import EvaluationRun
 
 # Names of the stages that can record an error. A fixed list keeps reports
 # and tests from depending on free-form strings.
 STAGE_REFLECT = "reflect"
 STAGE_SYNTHESIZE = "synthesize"
+STAGE_EVALUATE = "evaluate"
 STAGE_MEMORY = "memory"
 
 
@@ -77,6 +79,7 @@ class PipelineResult:
     reflection: Reflection | None = None  # None: skipped or crashed
     outcome: SynthesisOutcome | None = None  # None: not asked, skipped or crashed
     stage_errors: list[StageError] = field(default_factory=list)
+    evaluation: EvaluationRun | None = None  # None: not asked, skipped or crashed
     prior: RunRecord | None = None  # last run of this ticker within the cutoff
     changes: RunDiff | None = None  # what changed since `prior`
     saved: bool = False  # True once this run was appended to memory
@@ -99,6 +102,7 @@ def run_pipeline(
     reflector: Callable[[LoopResult], tuple[LoopResult, Reflection]] = reflect,
     analyst: Callable[..., SynthesisOutcome] = analyze_run,
     memory_path: Path | None = None,
+    evaluator: Callable[..., EvaluationRun] | None = None,
 ) -> PipelineResult:
     """Run every stage for ``ticker`` and return one PipelineResult.
 
@@ -108,6 +112,11 @@ def run_pipeline(
     ``memory_path`` turns memory on: the prior run is loaded before synthesis,
     and the finished analysis is appended afterwards. None (the default) means
     no file is read or written.
+
+    ``evaluator`` turns the evaluator-optimizer on (None = off). It receives
+    (loop, draft outcome, reflection) and returns an EvaluationRun. Its best
+    draft REPLACES ``outcome`` so memory stores the final analysis, and the
+    original draft stays available in ``evaluation.rounds``.
 
     Raises RuntimeError for a setup problem such as a missing API key, because
     no stage can run without it.
@@ -137,7 +146,16 @@ def run_pipeline(
         except Exception as exc:  # noqa: BLE001  - stage boundary, recorded below
             result.stage_errors.append(StageError(STAGE_SYNTHESIZE, _describe(exc)))
 
-    # [evaluate goes here: revise up to MAX_ROUNDS, then keep the best draft]
+    # Stage: evaluator-optimizer. A fallback analysis is not worth judging.
+    # A crash here keeps the first draft (partial results, as everywhere).
+    if (evaluator is not None and result.outcome is not None
+            and not result.outcome.fallback_reason):
+        try:
+            result.evaluation = evaluator(
+                result.loop, result.outcome, result.reflection)
+            result.outcome = result.evaluation.final
+        except Exception as exc:  # noqa: BLE001  - stage boundary, recorded below
+            result.stage_errors.append(StageError(STAGE_EVALUATE, _describe(exc)))
 
     # Stage: memory write. A fallback analysis (the model's reply was rejected)
     # is not saved: it would teach the next run something we did not trust.

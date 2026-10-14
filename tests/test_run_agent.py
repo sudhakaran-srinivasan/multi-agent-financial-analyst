@@ -250,3 +250,41 @@ def test_json_lists_stage_errors(capsys):
     payload = json.loads(capsys.readouterr().out)
     assert payload["stage_errors"] == [
         {"stage": "reflect", "error": "ValueError: kaboom"}]
+
+
+# ---- evaluation lines -------------------------------------------------------------
+def _eval_run(passed=True, evaluated=True):
+    from finagent.agent.synthesis import SynthesisOutcome
+    from finagent.samples import SAMPLE_ANALYSIS
+    from finagent.workflows.evaluation_rules import RUBRIC_CRITERIA
+    from finagent.workflows.evaluator_optimizer import (
+        EvaluationRun,
+        Judgment,
+        Round,
+    )
+
+    outcome = SynthesisOutcome(SAMPLE_ANALYSIS, None, [], [])
+    run = EvaluationRun(final=outcome, passed=passed, revisions=1,
+                        stopped_because="the revision 1 passed")
+    if evaluated:
+        scores = [{"criterion": c, "score": 4, "comment": ""} for c in RUBRIC_CRITERIA]
+        run.rounds.append(Round("draft", outcome, Judgment(
+            scores, critical_issues=["number invented"]), "revise", 4.0))
+    else:
+        run.stopped_because = "judge failed"
+    return run
+
+
+def test_evaluation_lines_show_status_rounds_and_critical_issues():
+    from finagent.run_agent import _evaluation_lines
+
+    text = "\n".join(_evaluation_lines(_eval_run(passed=False)))
+    assert "DID NOT PASS" in text and "draft" in text
+    assert "critical: number invented" in text and "numeric_accuracy" in text
+
+
+def test_evaluation_lines_say_when_nothing_was_evaluated():
+    from finagent.run_agent import _evaluation_lines
+
+    assert "not evaluated" in "\n".join(_evaluation_lines(_eval_run(evaluated=False)))
+    assert _evaluation_lines(None) == []

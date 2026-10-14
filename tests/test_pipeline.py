@@ -142,3 +142,61 @@ def test_a_memory_failure_is_recorded_and_keeps_the_analysis(tmp_path):
                        memory_path=blocked / "m.jsonl")
     assert run.outcome is outcome and not run.saved
     assert [e.stage for e in run.stage_errors] == ["memory"]
+
+
+# ---- evaluate stage -------------------------------------------------------------
+class _Run:
+    """Just enough of an EvaluationRun for the pipeline."""
+
+    def __init__(self, final):
+        self.final = final
+
+
+def _run_with(evaluator, outcome, tmp_path=None):
+    return run_pipeline(
+        "NVDA", runner=lambda t: SAMPLE_LOOP_RESULT, reflector=ok_reflector,
+        analyst=lambda r, reflection=None: outcome, evaluator=evaluator,
+        memory_path=(tmp_path / "m.jsonl") if tmp_path else None)
+
+
+def test_evaluation_is_off_by_default():
+    run = _run_with(None, _Outcome())
+    assert run.evaluation is None
+
+
+def test_the_evaluators_best_draft_replaces_the_outcome():
+    draft, final = _Outcome("neutral"), _Outcome("bullish")
+    seen = {}
+
+    def evaluator(loop, outcome, reflection):
+        seen.update(loop=loop, outcome=outcome, reflection=reflection)
+        return _Run(final)
+
+    run = _run_with(evaluator, draft)
+    assert run.outcome is final and run.evaluation.final is final
+    assert seen["outcome"] is draft and seen["loop"] is UPDATED
+    assert seen["reflection"] is SAMPLE_REFLECTION
+
+
+def test_memory_stores_the_final_analysis_not_the_first_draft(tmp_path):
+    import json
+
+    run = _run_with(lambda *a: _Run(_Outcome("bullish")), _Outcome("neutral"),
+                    tmp_path)
+    saved = json.loads((tmp_path / "m.jsonl").read_text().splitlines()[0])
+    assert run.saved and saved["stance"] == "bullish"
+
+
+def test_an_evaluator_crash_keeps_the_first_draft():
+    from finagent.pipeline import STAGE_EVALUATE
+
+    draft = _Outcome()
+    run = _run_with(boom, draft)
+    assert run.outcome is draft and run.evaluation is None
+    assert [e.stage for e in run.stage_errors] == [STAGE_EVALUATE]
+
+
+def test_a_fallback_analysis_is_not_sent_to_the_evaluator():
+    called = []
+    run = _run_with(lambda *a: called.append(1), _Outcome(fallback="rejected"))
+    assert not called and run.evaluation is None

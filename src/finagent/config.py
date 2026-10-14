@@ -8,7 +8,8 @@ Why one file?
     * ``.env`` is loaded once, here, instead of in every notebook cell.
     * A missing API key fails early with a message that names the key.
 
-AI DISCLOSURE: 
+AI DISCLOSURE: structure drafted with Claude (Anthropic); the values marked
+``# AUTHOR:`` are the project owner's own decisions.
 """
 
 import os
@@ -20,6 +21,12 @@ from dotenv import find_dotenv, load_dotenv
 # AUTHOR: confirm. Pinned so results are reproducible; "latest" aliases can
 # change behaviour between runs and break the notebook demo.
 MODEL: str = "openai/gpt-4o-mini"
+
+# AUTHOR: confirm. The evaluator's judge. Defaults to the same model that
+# writes the analysis, which is a known weakness: a model can be lenient on its
+# own writing ("self-preference"). Setting a different model here is the fix,
+# and the notebook should say so.
+JUDGE_MODEL: str = MODEL
 
 # OpenRouter exposes an OpenAI-compatible API, so the ``openai`` SDK works
 # when pointed at this URL.
