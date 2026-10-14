@@ -10,7 +10,8 @@ AGENT DESIGN (rubric: Workflow Patterns - evaluator-optimizer)
 
     Proposal for April (Track C) to confirm or change.
 
-AI DISCLOSURE: 
+AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
+modified by the author. Author-owned decisions are marked  # AUTHOR:.
 """
 from __future__ import annotations
 
@@ -23,6 +24,7 @@ RUBRIC_CRITERIA: tuple[str, ...] = (
     "stance_consistency",  # does the stance follow from the evidence?
     "risk_coverage",  # are the real risks and data gaps stated?
     "confidence_calibration",  # is confidence honest given gaps and evidence?
+    "source_quality",  # (from April) does the draft name its sources?
 )
 # AUTHOR/April: pass needs a high average AND no critical defect.
 PASS_AVERAGE = 4.0
@@ -34,12 +36,19 @@ def decide_verdict(
     scores: list[CriterionScore],
     pass_average: float = PASS_AVERAGE,
     floor: int = CRITERION_FLOOR,
+    critical_issues: list[str] | None = None,
 ) -> tuple[Verdict, float]:
-    """Return (verdict, overall_score). No scores means we cannot approve."""
+    """Return (verdict, overall_score). No scores means we cannot approve.
+
+    Any critical issue (April's idea) forces "revise" whatever the scores say:
+    a high average must not hide a stance that contradicts the evidence.
+    """
     if not scores:
         return "revise", 0.0
     values = [s["score"] for s in scores]
     overall = sum(values) / len(values)
+    if critical_issues:
+        return "revise", overall
     if overall >= pass_average and min(values) >= floor:
         return "pass", overall
     return "revise", overall

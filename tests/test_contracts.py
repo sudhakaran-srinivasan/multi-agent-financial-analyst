@@ -115,7 +115,7 @@ def test_sample_evaluation_verdict_matches_the_rule():
 
 def test_rule_constants_are_sane():
     assert 1 <= CRITERION_FLOOR <= PASS_AVERAGE <= 5
-    assert MAX_ROUNDS == 2 and len(RUBRIC_CRITERIA) == 5
+    assert MAX_ROUNDS == 2 and len(RUBRIC_CRITERIA) == 6
 
 
 def test_checker_rejects_bool_where_number_expected():
