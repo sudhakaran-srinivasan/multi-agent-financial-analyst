@@ -207,15 +207,25 @@ def rank_candidates(articles: list[Article],
 
 def select_articles(articles: list[Article], *, now: datetime,
                     terms: tuple[str, ...] = ()) -> NewsBatch:
-    """Prefer the short window; widen once if coverage is thin."""
-    short = preprocess(articles, now=now, max_age_days=LOOKBACK_DAYS)
+    """Prefer the short window; widen once if coverage is thin.
+
+    Order matters: clean and filter by age WITHOUT a cap, rank the whole list
+    (company mentions first), and only then cut to MAX_CANDIDATES. Capping
+    first would hide relevant items sitting below newer noise.
+    """
+    everything = len(articles) or 1  # no cap while filtering; ranking comes next
+    short = preprocess(articles, now=now, max_age_days=LOOKBACK_DAYS,
+                       max_articles=everything)
     if len(short) >= MIN_ARTICLES:
-        return NewsBatch(rank_candidates(short, terms), LOOKBACK_DAYS, widened=False)
-    wide = preprocess(articles, now=now, max_age_days=WIDE_LOOKBACK_DAYS)
+        return NewsBatch(rank_candidates(short, terms)[:MAX_CANDIDATES],
+                         LOOKBACK_DAYS, widened=False)
+    wide = preprocess(articles, now=now, max_age_days=WIDE_LOOKBACK_DAYS,
+                      max_articles=everything)
     if len(wide) > len(short):
-        return NewsBatch(rank_candidates(wide, terms), WIDE_LOOKBACK_DAYS,
-                         widened=True)
-    return NewsBatch(rank_candidates(short, terms), LOOKBACK_DAYS, widened=False)
+        return NewsBatch(rank_candidates(wide, terms)[:MAX_CANDIDATES],
+                         WIDE_LOOKBACK_DAYS, widened=True)
+    return NewsBatch(rank_candidates(short, terms)[:MAX_CANDIDATES],
+                     LOOKBACK_DAYS, widened=False)
 
 
 def collect_articles(ticker: str, *, client: Any = None,

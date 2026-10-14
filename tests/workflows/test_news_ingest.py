@@ -241,3 +241,12 @@ def test_collect_articles_ranks_with_the_company_name():
     batch = collect_articles("NVDA", client=client, now=NOW,
                              company_name="NVIDIA Corporation")
     assert batch.articles[0].headline == "Nvidia unveils chip"
+
+
+def test_a_relevant_article_below_the_newest_noise_is_still_found():
+    """Regression: capping to the newest N before ranking hid relevant items."""
+    noise = [article(f"Deere story {i}", days_ago=i / 10) for i in range(1, 31)]
+    relevant = article("Nvidia unveils new chip", days_ago=10)
+    batch = select_articles(noise + [relevant], now=NOW, terms=("nvidia",))
+    assert len(batch.articles) == MAX_CANDIDATES
+    assert batch.articles[0].headline == "Nvidia unveils new chip"
