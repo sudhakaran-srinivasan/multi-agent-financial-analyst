@@ -410,3 +410,11 @@ def test_a_revision_still_goes_through_the_python_checks():
 def reply_evidence_ok():
     return [{"claim": "Beats", "value": 0,
              "source": "get_earnings_history.summary.beats"}]
+
+
+def test_the_prompt_requires_traceable_risks_and_use_of_the_news():
+    client = ScriptedClient(reply())
+    synthesize(NVDA_RESULT, client)
+    system = client.requests[0]["messages"][0]["content"]
+    assert "Every risk must be traceable" in system
+    assert "Use the news insights" in system

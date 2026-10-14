@@ -63,17 +63,23 @@ RUBRIC: dict[str, Criterion] = {
                     "from the evidence and the signals?",
         "score_5": "The stance is what the evidence points to, and signals "
                    "that disagree with it are acknowledged.",
-        "score_3": "The stance is defensible but ignores a signal or an "
-                   "item of evidence that pulls the other way.",
+        "score_3": "The stance is defensible but ignores a signal, an item "
+                   "of evidence, or a whole data source (for example the "
+                   "news) that pulls the other way or is simply unused.",
         "score_1": "The stance contradicts the evidence or the signals.",
     },
     "risk_coverage": {
-        "question": "Are the real risks and the data gaps stated?",
-        "score_5": "The main risks the data shows are named, and the "
+        "question": "Are the real risks and the data gaps stated, and is every "
+                    "risk traceable to the data?",
+        "score_5": "The main risks the data shows are named, each traceable to "
+                   "a signal, a gap, a tool result or a news item, and the "
                    "important data gaps are stated.",
-        "score_3": "Some real risks are named, but an important one, or the "
-                   "data gaps, are missing.",
-        "score_1": "Little or no risk discussion; gaps are ignored.",
+        "score_3": "Some real risks are named, but an important one or the "
+                   "data gaps are missing, OR a risk is generic and not "
+                   "shown by the data (for example 'regulation' or 'market "
+                   "swings' with nothing behind it).",
+        "score_1": "Little or no risk discussion, gaps are ignored, or the "
+                   "risks are mostly generic or contradicted by the data.",
     },
     "confidence_calibration": {
         "question": "Is the confidence level honest given the data gaps and "
@@ -99,6 +105,8 @@ CRITICAL_ISSUE_EXAMPLES: tuple[str, ...] = (
     "the stance contradicts the evidence",
     "the confidence is unsupported by the evidence or the data gaps",
     "a number in the analysis is wrong or invented",
+    ("a claim contradicts the data (for example 'negative sentiment' when the "
+     "news items are positive)"),
     "there is no meaningful risk discussion",
 )
 

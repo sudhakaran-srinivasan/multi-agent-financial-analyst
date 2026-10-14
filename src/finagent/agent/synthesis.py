@@ -93,6 +93,12 @@ conflict, say so and explain which you weighted more and why.
 norm (about 78% of S&P 500 companies), not a strength by itself.
 - For a company that loses money, P/E is not meaningful: judge survival (cash, \
 debt, cash burn) and growth instead.
+- Every risk must be traceable to the facts given: a signal, a data gap, a \
+tool result or a news item. Name what it comes from. Do NOT add general risks \
+(market swings, regulation, competition) unless the data shows them.
+- Use the news insights when there are any: say what they show, including \
+when they point against your stance. Press-release news leans positive, so \
+treat its sentiment as weak evidence.
 - Do not mention anything missing as if it were known. Python lists the gaps.
 - The reflection record says which failed tools were retried. Never rely on a \
 tool that is still failing.
