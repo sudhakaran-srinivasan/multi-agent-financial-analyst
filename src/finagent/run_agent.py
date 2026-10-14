@@ -22,6 +22,7 @@ import argparse
 import json
 import sys
 from collections.abc import Callable, Sequence
+from pathlib import Path
 from typing import Any
 
 from finagent.agent.loop import run_research_loop
@@ -29,7 +30,13 @@ from finagent.agent.reflection import reflect
 from finagent.agent.signals import Signal
 from finagent.agent.synthesis import DISCLAIMER, SynthesisOutcome, analyze_run
 from finagent.contracts import Analysis, LoopResult, Plan, Reflection
-from finagent.pipeline import StageError, run_pipeline, stage_error_payload
+from finagent.memory import DEFAULT_PATH, format_diff
+from finagent.pipeline import (
+    PipelineResult,
+    StageError,
+    run_pipeline,
+    stage_error_payload,
+)
 
 _MAX_ERROR_CHARS = 100
 
@@ -186,11 +193,21 @@ def _stage_error_lines(errors: list[StageError]) -> list[str]:
         f"  {e.stage}: {e.error}" for e in errors] if errors else []
 
 
+def _memory_lines(run: PipelineResult) -> list[str]:
+    """What memory did this run: compared with a prior run, or first of its kind."""
+    if run.changes is not None:
+        return [""] + format_diff(run.changes)
+    if run.saved:
+        return ["", "Memory: first run for this ticker within 30 days; saved."]
+    return []
+
+
 def main(
     argv: Sequence[str] | None = None,
     runner: Callable[[str], LoopResult] = run_research_loop,
     analyst: Callable[..., SynthesisOutcome] = analyze_run,
     reflector: Callable[[LoopResult], tuple[LoopResult, Reflection]] = reflect,
+    memory_path: Path = DEFAULT_PATH,
 ) -> int:
     """Parse arguments, run the pipeline, print the report, return an exit code.
 
@@ -206,11 +223,14 @@ def main(
                         help="print the full result as JSON")
     parser.add_argument("--analyze", action="store_true",
                         help="after the data loop, write the analysis")
+    parser.add_argument("--no-memory", action="store_true",
+                        help="do not read or write the run memory file")
     args = parser.parse_args(argv)
 
     try:
         run = run_pipeline(args.ticker, analyze=args.analyze, runner=runner,
-                           reflector=reflector, analyst=analyst)
+                           reflector=reflector, analyst=analyst,
+                           memory_path=None if args.no_memory else memory_path)
     except RuntimeError as exc:  # for example a missing API key
         print(f"Setup problem: {exc}", file=sys.stderr)
         return 2
@@ -219,6 +239,8 @@ def main(
         payload: dict[str, Any] = {"loop": run.loop} if args.analyze else dict(run.loop)
         payload["reflection"] = run.reflection
         payload["stage_errors"] = stage_error_payload(run.stage_errors)
+        payload["memory"] = {"saved": run.saved, "prior": run.prior,
+                             "changes": run.changes}
         if run.outcome is not None:
             payload.update(
                 analysis=run.outcome.analysis, signals=run.outcome.signals,
@@ -230,6 +252,7 @@ def main(
         print("\n".join(_reflection_lines(run.reflection)))
         if run.outcome is not None:
             print(format_analysis(run.outcome))
+            print("\n".join(_memory_lines(run)))
         print("\n".join(_stage_error_lines(run.stage_errors)))
     return 1 if run.fatal else 0
 

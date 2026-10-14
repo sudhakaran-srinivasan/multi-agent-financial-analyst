@@ -91,3 +91,54 @@ def test_the_ticker_comes_from_the_loop_result():
     run = run_pipeline("nvda", analyze=False,
                        runner=lambda t: SAMPLE_LOOP_RESULT, reflector=ok_reflector)
     assert run.ticker == "NVDA"
+
+
+# ---- memory stage -------------------------------------------------------------
+class _Outcome:
+    """Just enough of a SynthesisOutcome for the memory stage."""
+
+    def __init__(self, stance="neutral", fallback=None):
+        from finagent.samples import SAMPLE_ANALYSIS
+
+        self.analysis = {**SAMPLE_ANALYSIS, "stance": stance}
+        self.signals = []
+        self.fallback_reason = fallback
+        self.notes = []
+
+
+def _run(tmp_path, outcome):
+    return run_pipeline("NVDA", runner=lambda t: SAMPLE_LOOP_RESULT,
+                        reflector=ok_reflector, analyst=lambda r, reflection=None: outcome,
+                        memory_path=tmp_path / "m.jsonl")
+
+
+def test_memory_is_off_by_default(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    run = run_pipeline("NVDA", runner=lambda t: SAMPLE_LOOP_RESULT,
+                       reflector=ok_reflector, analyst=lambda r, reflection=None: _Outcome())
+    assert not run.saved and not (tmp_path / "data").exists()
+
+
+def test_first_run_saves_and_second_run_reports_what_changed(tmp_path):
+    first = _run(tmp_path, _Outcome("neutral"))
+    assert first.saved and first.prior is None and first.changes is None
+    second = _run(tmp_path, _Outcome("positive"))
+    assert second.prior is not None
+    assert second.changes.stance == ("neutral", "positive")
+    assert len((tmp_path / "m.jsonl").read_text().splitlines()) == 2
+
+
+def test_a_fallback_analysis_is_not_remembered(tmp_path):
+    run = _run(tmp_path, _Outcome(fallback="model reply rejected"))
+    assert not run.saved and not (tmp_path / "m.jsonl").exists()
+
+
+def test_a_memory_failure_is_recorded_and_keeps_the_analysis(tmp_path):
+    blocked = tmp_path / "file"
+    blocked.write_text("x")  # a FILE where the folder should be: saving fails
+    outcome = _Outcome()
+    run = run_pipeline("NVDA", runner=lambda t: SAMPLE_LOOP_RESULT,
+                       reflector=ok_reflector, analyst=lambda r, reflection=None: outcome,
+                       memory_path=blocked / "m.jsonl")
+    assert run.outcome is outcome and not run.saved
+    assert [e.stage for e in run.stage_errors] == ["memory"]
