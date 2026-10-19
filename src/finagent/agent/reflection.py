@@ -22,9 +22,7 @@ Agent Design (rubric: Agent Functions, "self-reflection").
     The input is never changed; a new LoopResult is returned, and the retry
     calls are appended to the trace (step = steps_used + 1).
 
-AI DISCLOSURE: structure drafted with Claude (Anthropic). The retry rules and
-the one-attempt budget follow decisions made by the project owner; lines
-marked ``# AUTHOR:`` are theirs to review.
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

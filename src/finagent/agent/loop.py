@@ -24,9 +24,7 @@ Agent Design (rubric: Agent Functions, "uses tools dynamically").
 Testing: the model client is injected, so tests use a scripted fake and need
 no API key. Real runs build a client with ``make_client``.
 
-AI DISCLOSURE: structure drafted with Claude (Anthropic). The prompt text
-and the stop rules follow decisions made by the project owner; prompt lines
-marked ``# AUTHOR:`` are theirs to review and reword.
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

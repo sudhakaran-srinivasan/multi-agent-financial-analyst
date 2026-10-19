@@ -24,8 +24,7 @@ AGENT DESIGN (rubric: Workflow Patterns - prompt chaining, then routing)
     We do NOT guess a label, because a wrong label would send the article to
     the wrong specialist and look like real evidence.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

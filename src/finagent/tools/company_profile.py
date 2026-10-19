@@ -7,7 +7,7 @@ AGENT DESIGN (rubric: Agent Design / Functions)
     Why       : the planner must plan from verified facts, never from the
                 model's guess about what kind of company this is.
 
-AI DISCLOSURE:
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

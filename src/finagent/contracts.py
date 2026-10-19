@@ -20,8 +20,7 @@ TypedDicts are plain dicts at runtime (json.dumps works); Literal types list
 the only allowed values. Python does not enforce them at runtime, so
 tests/test_contracts.py checks the samples against these definitions.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

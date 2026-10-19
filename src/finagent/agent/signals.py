@@ -14,9 +14,7 @@ Agent Design (rubric: Agent Functions, tool use and reasoning support).
     Thresholds are conventions, not laws. They are named constants marked
     ``# AUTHOR:`` so the project owner can defend or change each one.
 
-AI DISCLOSURE: structure and first-draft thresholds written with Claude
-(Anthropic); the finance conventions follow standard analyst practice and
-every threshold is the project owner's to review.
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

@@ -10,8 +10,7 @@ AGENT DESIGN (rubric: Workflow Patterns - evaluator-optimizer)
 
     Proposal for April (Track C) to confirm or change.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

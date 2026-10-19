@@ -8,8 +8,7 @@ AGENT DESIGN (rubric: Agent Design / Functions)
                 `gaps` tells the agent WHY a number is absent so it can
                 reason (re-fetch, lower confidence, or state a limitation).
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

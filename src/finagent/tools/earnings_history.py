@@ -45,8 +45,7 @@ DESIGN REASONING (author-owned decision: follow the FactSet convention)
         - Finnhub's four actuals sum to ~7.01 while yfinance trailingEps is
           7.91 (different definitions/timing). One-source rule: never mix them.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

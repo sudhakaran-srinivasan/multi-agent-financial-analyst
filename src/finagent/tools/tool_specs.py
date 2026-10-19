@@ -11,7 +11,7 @@ handed to the model as starting context.
 
 Format: the OpenAI "function calling" schema, which OpenRouter accepts.
 
-AI DISCLOSURE:
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

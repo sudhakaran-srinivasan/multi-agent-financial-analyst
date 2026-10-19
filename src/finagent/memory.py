@@ -33,8 +33,7 @@ DESIGN REASONING (AUTHOR: decisions made with the project owner)
         The change list comes from stored fields, not from the model, so it
         cannot invent a change. The model may later explain it.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

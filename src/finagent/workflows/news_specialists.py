@@ -23,8 +23,7 @@ AGENT DESIGN (rubric: Workflow Patterns - routing AND prompt chaining)
     Untrusted text: article text only appears in the user message, between
     markers, and the prompts tell the model to ignore instructions inside it.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

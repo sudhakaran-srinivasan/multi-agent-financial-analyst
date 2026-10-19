@@ -8,8 +8,7 @@ Why one file?
     * ``.env`` is loaded once, here, instead of in every notebook cell.
     * A missing API key fails early with a message that names the key.
 
-AI DISCLOSURE: structure drafted with Claude (Anthropic); the values marked
-``# AUTHOR:`` are the project owner's own decisions.
+AI use: see the AI note in README.md.
 """
 
 import os

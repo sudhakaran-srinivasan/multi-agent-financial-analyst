@@ -18,7 +18,7 @@ Agent Design (rubric: Agent Functions, "planning").
 
 Testing: the model client is injected, so tests use a scripted fake.
 
-AI DISCLOSURE: # AUTHOR:`` are theirs to reword.
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

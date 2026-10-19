@@ -22,9 +22,7 @@ evaluator).
     Model failure or an unusable reply -> a rule-based Analysis built from the
     signals, with low confidence and the reason recorded. Never a crash.
 
-AI DISCLOSURE: structure drafted with Claude (Anthropic). The confidence caps,
-the prompt and the fallback rule are decisions for the project owner to
-review; lines marked ``# AUTHOR:`` are theirs to reword.
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

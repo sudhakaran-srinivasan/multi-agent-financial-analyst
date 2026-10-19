@@ -42,9 +42,8 @@ KNOWN LIMITS (for the notebook, Evaluation and Iteration)
     * A judge can miss an invented non-numeric claim; the number check in
       synthesis catches numbers only.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), combining the
-team's two evaluator drafts (Sudha's rules, April's structured judge output,
-retry and critical-issue ideas). Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
+Combines the team's two evaluator drafts.
 """
 from __future__ import annotations
 

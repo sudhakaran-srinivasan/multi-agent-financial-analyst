@@ -13,7 +13,7 @@ Exit codes: 0 = finished (done or step_cap), 1 = fatal_error (bad ticker,
 not a stock, or the model API failed), 2 = setup problem (for example a
 missing API key).
 
-AI DISCLOSURE: structure drafted with Claude (Anthropic).
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

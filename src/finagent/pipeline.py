@@ -30,8 +30,7 @@ AGENT DESIGN (rubric: Agent Design / Functions)
         * A crash in a LATER stage (reflection, synthesis) is caught, recorded
           in `stage_errors`, and the pipeline returns what it has so far.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

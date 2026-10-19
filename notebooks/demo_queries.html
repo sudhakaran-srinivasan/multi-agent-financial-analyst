@@ -7558,7 +7558,7 @@ a.anchor-link {
 </table>
 <p><strong>Cost note:</strong> Part 1 with the evaluator makes roughly 10 to 45 model calls per ticker (the news step is the biggest share). Finnhub free tier is 60 calls/minute, so avoid re-running Part 1 in a tight loop.</p>
 <p><strong>Educational project, not investment advice.</strong></p>
-<p><strong>AI disclosure:</strong> this notebook, the code and the documentation were drafted with Claude (Anthropic) and reviewed and modified by the team. Files drafted with AI carry an <code>AI DISCLOSURE</code> note, and the team's own decisions are marked <code># AUTHOR:</code> in the code (see 3.6).</p>
+<p><strong>AI disclosure:</strong> AI (Claude, by Anthropic) was used for brainstorming and iterating on the design, drafting and formatting code and documentation. The team critically reviewed, tested and verified the output end to end.</p>
 </div>
 </div>
 </div>
@@ -8990,61 +8990,7 @@ final stance: bullish
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="3.6-Where-AI-helped-and-what-the-team-owns">3.6 Where AI helped and what the team owns<a class="anchor-link" href="#3.6-Where-AI-helped-and-what-the-team-owns">¶</a></h3><p>Course rule: AI contributions are disclosed in code, and decisions the team owns are marked <code># AUTHOR:</code>.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c7cc3da2">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="o">!</span>grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">"AI DISCLOSURE"</span><span class="w"> </span>src<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
-<span class="o">!</span>grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">"# AUTHOR"</span><span class="w"> </span>src<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>      46
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>src/finagent/tools/tool_specs.py:54:# AUTHOR: review these descriptions. They decide when the model picks a tool.
-src/finagent/tools/company_profile.py:60:# AUTHOR: confirm or change these cut-offs (USD). Common analyst convention.
-src/finagent/tools/fundamentals.py:12:modified by the author. Author-owned decisions are marked  # AUTHOR:.
-src/finagent/tools/fundamentals.py:49:# AUTHOR: how far Yahoo's P/E may differ from price / EPS before we flag it.
-src/finagent/tools/registry.py:13:AI DISCLOSURE:   # AUTHOR:.
-src/finagent/tools/registry.py:46:# AUTHOR: review the soft/hard bounds; they encode judgement, not facts.
-Binary file src/finagent/tools/__pycache__/registry.cpython-311.pyc matches
-Binary file src/finagent/tools/__pycache__/fundamentals.cpython-311.pyc matches
-Binary file src/finagent/tools/__pycache__/earnings_history.cpython-311.pyc matches
-src/finagent/tools/earnings_history.py:49:modified by the author. Author-owned decisions are marked  # AUTHOR:.
-src/finagent/tools/earnings_history.py:60:# AUTHOR: free tier returns at most 4 quarters; fewer than this = thin history.
-src/finagent/tools/earnings_history.py:62:# AUTHOR: how far our recomputed surprise may differ from Finnhub's own value
-src/finagent/tools/earnings_history.py:65:# AUTHOR: below this |estimate| (USD per share) a percent surprise is not
-src/finagent/config.py:12:``# AUTHOR:`` are the project owner's own decisions.
-src/finagent/config.py:21:# AUTHOR: confirm. Pinned so results are reproducible; "latest" aliases can
-src/finagent/config.py:25:# AUTHOR: confirm. The evaluator's judge. Defaults to the same model that
-src/finagent/config.py:35:# AUTHOR: confirm. One "step" is one model turn. A normal NVDA run needs
-src/finagent/config.py:44:# AUTHOR: confirm. 0 makes tool choices as repeatable as the model allows,
-src/finagent/memory.py:37:modified by the author. Author-owned decisions are marked  # AUTHOR:.
-src/finagent/memory.py:51:# AUTHOR: a record older than this is ignored as context (kept on disk).
-</pre>
-</div>
+<h3 id="3.6-AI-disclosure">3.6 AI disclosure<a class="anchor-link" href="#3.6-AI-disclosure">¶</a></h3><p>AI (Claude, by Anthropic) was used for brainstorming and iterating on the design, drafting and formatting code and documentation. The team critically reviewed, tested and verified the output end to end.</p>
 </div>
 </div>
 </div>

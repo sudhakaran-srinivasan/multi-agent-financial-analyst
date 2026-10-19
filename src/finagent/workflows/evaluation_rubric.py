@@ -23,9 +23,8 @@ AGENT DESIGN (rubric: Workflow Patterns - evaluator-optimizer)
           forces a stance and a confidence, so it cannot fail) and
           thesis_quality (overlaps evidence_support and stance_consistency).
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), combining the
-two team drafts. The wording of every anchor is the project owner's to review.
-Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
+Combines the team's two evaluator drafts.
 """
 from __future__ import annotations
 

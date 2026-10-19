@@ -10,7 +10,7 @@ Two kinds of bounds (see FieldSpec):
     hard  -> impossible values = bad data -> value becomes None + a gap
     soft  -> unusual but possible -> value kept + a warning
 
-AI DISCLOSURE:   # AUTHOR:.
+AI use: see the AI note in README.md.
 """
 from __future__ import annotations
 

@@ -16,7 +16,7 @@ the model so it can correct itself. Every outcome also goes in the trace.
 Note: the loop, not the dispatcher, is responsible for making sure the
 ticker matches the stock being analysed in this run.
 
-AI DISCLOSURE:
+AI use: see the AI note in README.md.
 """
 
 from __future__ import annotations

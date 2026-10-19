@@ -17,8 +17,7 @@ AGENT DESIGN (rubric: Workflow Patterns - prompt chaining)
     free at 60 calls/minute. We make ONE call per run: it fetches the wide
     window once, and the 14-day / 90-day choice is made locally.
 
-AI DISCLOSURE: first draft generated with Claude (Anthropic), reviewed and
-modified by the author. Author-owned decisions are marked  # AUTHOR:.
+AI use: see the AI note in README.md.
 Reference: the team's ingest.ipynb (news idea and yfinance news exploration).
 """
 from __future__ import annotations

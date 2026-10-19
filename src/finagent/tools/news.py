@@ -23,8 +23,8 @@ AGENT DESIGN (rubric: Agent Functions - tool use; Workflow Patterns)
     the tool carries on with the ticker alone: a ranking hint is not worth
     failing the whole tool for.
 
-AI DISCLOSURE: pipeline code drafted with Claude (Anthropic), reviewed and
-modified by the author. The team's ingest.ipynb was the starting reference.
+AI use: see the AI note in README.md.
+The team's ingest.ipynb was the starting reference.
 """
 from __future__ import annotations
 
