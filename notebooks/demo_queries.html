@@ -7708,7 +7708,7 @@ Profile: NVIDIA Corporation (EQUITY), mega-cap, profitable, earnings in 30 days
 
 Plan:
   1. get_fundamentals: As a mega-cap technology company, understanding NVIDIA's key financial ratios will provide insights into its valuation, profitability, and growth potential.
-  2. get_earnings_history: Analyzing the last four quarters of earnings versus analyst estimates is crucial for assessing NVIDIA's performance trends and market expectations ahead of the upcoming earnings report.
+  2. get_earnings_history: Analyzing the last four quarters of earnings versus analyst estimates is crucial for assessing NVIDIA's performance consistency and market expectations ahead of the upcoming earnings report.
   3. get_news_insights: Recent news insights will help gauge market sentiment and any developments that could impact NVIDIA's stock performance leading up to its earnings date.
   Emphasis: This plan emphasizes a comprehensive financial and sentiment analysis to prepare for NVIDIA's upcoming earnings report.
 
@@ -7724,9 +7724,19 @@ Results collected:
   get_earnings_history   gaps: 0   warnings: 0
   get_news_insights      8 items
 
+News insights (category, sentiment, summary):
+  2026-10-19  general  positive A $10,000 investment in Nvidia stock is projected to increase in value by 2030, driven by emerging growth oppo...
+  2026-10-18  market   negative Bond investors are showing less confidence in Nvidia, which serves as a warning to Nvidia shareholders.
+  2026-10-18  general  positive Nvidia is launching a significant financing initiative, highlighting that the AI race now relies heavily on ca...
+  2026-10-18  general  positive Honeywell has introduced a new platform called Forge Cognition, which is backed by Nvidia.
+  2026-10-18  market   positive Nvidia stock has historically produced an average return of 13% in November this decade, although there is one...
+  2026-10-18  market   neutral  NVIDIA Corporation closed at $217.23 on October 15 and has returned 9.52% over the last six months, while also...
+  2026-10-18  general  positive Elon Musk praised Nvidia CEO Jensen Huang as SpaceX and Nvidia collaborate on AI computers for space, aiming t...
+  2026-10-18  general  positive Nvidia announced its largest share repurchase authorization in market history and is valued at $5 trillion.
+
 ANALYSIS  |  stance: bullish  |  confidence: high
 
-NVIDIA Corporation demonstrates strong financial health and growth potential, supported by a robust net cash position of $23.61 billion and a healthy profit margin of 63.66%. The company's forward P/E ratio of 13.45 suggests that analysts expect earnings growth, while a revenue growth rate of 105.9% indicates strong sales momentum. Additionally, positive sentiment from recent news highlights emerging growth opportunities in the AI ecosystem, further bolstering the company's outlook.
+NVIDIA Corporation demonstrates strong financial health with a solid net cash position of $23.61 billion, indicating that cash exceeds debt. The company has consistently beaten earnings estimates, achieving a perfect beat rate of 100% over the last four quarters, which reflects its strong operational performance. Additionally, positive signals such as a healthy profit margin of 63.66% and a revenue growth rate of 5.9% further support the bullish outlook. Analyst sentiment is also favorable, with a target mean price suggesting a potential upside of over 54% from the current price.
 
 Scorecard (computed by Python; [+] positive, [=] neutral, [-] negative):
   Signal                    Value  Read  Why
@@ -7742,11 +7752,11 @@ Scorecard (computed by Python; [+] positive, [=] neutral, [-] negative):
   earnings_record               1  [=]  beat estimates in 4 of 4 quarters; beating estimates is the norm (about 78% of S&amp;P 500 companies), so this is not a strength
 
 Evidence:
-  - forward P/E suggests earnings growth = 13.454941  &lt;get_fundamentals.valuation.forwardPE&gt;
-  - healthy profit margin = 0.63663  &lt;get_fundamentals.profitability.profitMargins&gt;
-  - strong revenue growth = 1.059  &lt;get_fundamentals.growth.revenueGrowth&gt;
   - net cash position = 23608999936.0  &lt;get_fundamentals.derived.net_cash&gt;
-  - analyst target indicates upside potential = 328.71695  &lt;get_fundamentals.sentiment.targetMeanPrice&gt;
+  - profit margin = 0.63663  &lt;get_fundamentals.profitability.profitMargins&gt;
+  - revenue growth = 1.059  &lt;get_fundamentals.growth.revenueGrowth&gt;
+  - analyst target mean price = 328.71695  &lt;get_fundamentals.sentiment.targetMeanPrice&gt;
+  - earnings beat rate = 1.0  &lt;get_earnings_history.summary.beat_rate&gt;
 
 Risks:
   - Bond investors are showing less confidence in Nvidia, which serves as a warning to Nvidia shareholders (source: get_news_insights).
@@ -7803,12 +7813,12 @@ Educational analysis produced by a course project. Not investment advice.
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>passed: True | revisions: 0 | the draft passed
 
-draft: verdict=pass overall=4.00
+draft: verdict=pass overall=4.33
   evidence_support         5  Every claim in the thesis is backed by specific evidence from the data.
   numeric_accuracy         5  All numbers in the analysis match the raw tool results exactly.
-  stance_consistency       3  The stance is mostly positive, but it does not fully acknowledge the negative sentiment from bond investors.
-  risk_coverage            3  Some risks are mentioned, but the analysis lacks a comprehensive discussion of risks and data gaps.
-  confidence_calibration   3  The high confidence level is not fully supported by the mixed signals present in the news.
+  stance_consistency       5  The bullish stance is supported by the positive evidence and signals presented.
+  risk_coverage            3  Some risks are mentioned, but the analysis lacks a comprehensive discussion of potential risks and data gaps.
+  confidence_calibration   3  The high confidence level is somewhat unsupported given the mixed signals from the news insights.
   source_quality           5  All evidence used in the analysis has a named source.
 </pre>
 </div>
@@ -7883,9 +7893,9 @@ draft: verdict=pass overall=4.00
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>
-ANALYSIS  |  stance: bullish  |  confidence: medium
+ANALYSIS  |  stance: neutral  |  confidence: medium
 
-Applied Aerospace &amp; Defense, Inc. (AADX) demonstrates strong revenue growth of 0.474, indicating a robust potential for future expansion despite its current unprofitability, as evidenced by a negative profit margin of -0.30236998. Analyst sentiment is also positive, with a target mean price of 22.875, suggesting significant upside potential from the current price of 11.37. While the company faces challenges such as cash burn and a thin earnings history, the positive signals from revenue growth and analyst targets support a bullish outlook.
+Applied Aerospace &amp; Defense, Inc. (AADX) is currently facing challenges due to its unprofitability and significant cash burn, as indicated by a negative profit margin of -0.30236998 and a free cash flow yield of -0.06602931254360155. However, the company shows promising revenue growth of 0.474, suggesting potential for future profitability. Analyst sentiment remains cautiously optimistic with a target mean price of 22.875, indicating a potential upside from the current price of 11.37. The mixed signals regarding profitability and growth lead to a neutral stance on the stock.
 
 Scorecard (computed by Python; [+] positive, [=] neutral, [-] negative):
   Signal                     Value  Read  Why
@@ -7901,14 +7911,16 @@ Scorecard (computed by Python; [+] positive, [=] neutral, [-] negative):
   earnings_record                0  [=]  only 1 quarter(s) of history (0 beat, 1 miss): too thin to draw a conclusion
 
 Evidence:
-  - revenue growth indicates potential for future expansion = 0.474  &lt;get_fundamentals.growth.revenueGrowth&gt;
-  - analyst sentiment suggests significant upside potential = 22.875  &lt;get_fundamentals.sentiment.targetMeanPrice&gt;
-  - current price is significantly lower than analyst target = 11.37  &lt;get_fundamentals.price.currentPrice&gt;
-  - the company has a negative profit margin = -0.30236998  &lt;get_fundamentals.profitability.profitMargins&gt;
+  - negative profit margin = -0.30236998  &lt;get_fundamentals.profitability.profitMargins&gt;
+  - revenue growth = 0.474  &lt;get_fundamentals.growth.revenueGrowth&gt;
+  - current price = 11.37  &lt;get_fundamentals.price.currentPrice&gt;
+  - analyst target mean price = 22.875  &lt;get_fundamentals.sentiment.targetMeanPrice&gt;
+  - free cash flow yield = -0.06602931254360155  &lt;get_fundamentals.derived.fcf_yield&gt;
 
 Risks:
   - negative profit margin from get_fundamentals.profitability.profitMargins
   - negative free cash flow yield from get_fundamentals.derived.fcf_yield
+  - net cash position is negative from get_fundamentals.derived.net_cash
   - thin earnings history with only 1 quarter from get_earnings_history.summary.beat_rate
 
 Data gaps:
@@ -7933,12 +7945,52 @@ stage errors: []
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=99a1b7b5">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fac276fa">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># The news workflow's output inside this run: one insight per analyzed article.</span>
+<span class="c1"># (The analysis above lists these articles under Sources; news is one input to the thesis.)</span>
+<span class="n">news</span> <span class="o">=</span> <span class="n">run_aadx</span><span class="o">.</span><span class="n">loop</span><span class="p">[</span><span class="s2">"results"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"get_news_insights"</span><span class="p">,</span> <span class="p">[])</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">news</span><span class="p">),</span> <span class="s2">"news insights for AADX</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">news</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s2">"published"</span><span class="p">]</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s2">"category"</span><span class="p">]</span><span class="si">:</span><span class="s1">&lt;8</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s2">"sentiment"</span><span class="p">]</span><span class="si">:</span><span class="s1">&lt;8</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s2">"summary"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"   "</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="s2">"source_url"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>3 news insights for AADX
+
+2026-10-13  earnings positive Applied Aerospace &amp; Defense expects mid-teens organic revenue growth in 2027 and 2028, supported by defense demand and backlog, according to RBC's assessment.
+    https://finnhub.io/api/news?id=227fd0e89b1e80a476045facd0d62b89eb7f53d13204fad2ca3e338dbe0530f1
+2026-10-13  general  neutral  RBC Capital maintains an Outperform rating on Applied Aerospace (NYSE:AADX), while lowering the price target from $24 to $21, with analyst Ken Herbert involved in this rating change.
+    https://finnhub.io/api/news?id=0b31a88a4d9a99d8224f34558b4bba91437d15d8d7e530e0dea18236b3c95f24
+2026-10-13  general  positive Jim Cramer recommends sticking with Applied Aerospace, favoring it alongside Nokia and BlackBerry, while questioning Ambarella and expressing a dislike for food stocks.
+    https://finnhub.io/api/news?id=f413d05e558971fa226282f43799d3bd9121ce28b70b314a815e0720cbaa255f
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=99a1b7b5">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">bad</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"ZZZZZZ"</span><span class="p">,</span> <span class="s2">"SPY"</span><span class="p">):</span>
@@ -8023,7 +8075,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.tools.company_profile</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_company_profile</span>
@@ -8038,7 +8090,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[6]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>Profile(ticker='NVDA', name='NVIDIA Corporation', quote_type='EQUITY', sector='Technology', industry='Semiconductors', market_cap=5170596937728.0, size_bucket='mega', is_profitable=True, is_pre_revenue=False, next_earnings_date=datetime.date(2026, 11, 17), days_to_earnings=30, warnings=[])</pre>
 </div>
@@ -8061,7 +8113,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.tools.fundamentals</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_fundamentals</span>
@@ -8085,7 +8137,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 </div>
 </div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>({'trailingPE': None,
   'forwardPE': 28.603773,
@@ -8118,7 +8170,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.tools.earnings_history</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_earnings_history</span>
@@ -8164,7 +8216,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.agent.loop</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_research_loop</span>
@@ -8187,16 +8239,16 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>plan emphasis: This plan emphasizes a comprehensive financial and performance analysis to prepare for NVIDIA's upcoming earnings report.
+<pre>plan emphasis: This plan emphasizes a comprehensive analysis of NVIDIA's financial health and market sentiment ahead of its upcoming earnings report.
  - get_fundamentals | As a mega-cap technology company, understanding NVIDIA's key financial ratios will provide
- - get_earnings_history | Reviewing the last four quarters of earnings versus analyst estimates is crucial for asses
- - get_news_insights | Recent news can impact investor sentiment and stock performance, making it essential to ga
+ - get_earnings_history | With upcoming earnings in 30 days, analyzing the last four quarters of earnings versus ana
+ - get_news_insights | Recent news can impact investor sentiment and stock performance, making it crucial to unde
 
 0 get_company_profile ok
 0 plan_research ok
 1 get_fundamentals ok
-2 get_earnings_history ok
-3 get_news_insights ok
+1 get_earnings_history ok
+1 get_news_insights ok
 </pre>
 </div>
 </div>
@@ -8218,7 +8270,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.agent.reflection</span><span class="w"> </span><span class="kn">import</span> <span class="n">reflect</span>
@@ -8234,7 +8286,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>('Nothing to retry; 0 gaps remain (retrying cannot fix them).', [])</pre>
 </div>
@@ -8257,7 +8309,7 @@ python<span class="w"> </span>-m<span class="w"> </span>finagent.run_agent<span 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.agent.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_signals</span>
@@ -8305,7 +8357,7 @@ earnings_record          neutral   1.0            beat estimates in 4 of 4 quart
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.workflows.news_ingest</span><span class="w"> </span><span class="kn">import</span> <span class="n">collect_articles</span>
@@ -8326,11 +8378,11 @@ earnings_record          neutral   1.0            beat estimates in 4 of 4 quart
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>kept: 20 | window days: 14 | widened: False
+2026-10-19 | This Is AMD's Biggest Hurdle in an AI Sell-Off (and No, It's Not Nvidia)
 2026-10-19 | Here’s What a $10,000 Investment in Nvidia Stock Will Be Worth by 2030
 2026-10-18 | The Bond Market Is Sending a Warning to Nvidia Shareholders
 2026-10-18 | NVIDIA And 2 Other Fast Growing Stocks To Own
 2026-10-18 | The next AI race will be won at the credit desk
-2026-10-18 | The $5 Trillion Club: Which Is the Better Stock to Own, Apple or Nvidia?
 </pre>
 </div>
 </div>
@@ -8341,7 +8393,7 @@ earnings_record          neutral   1.0            beat estimates in 4 of 4 quart
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.agent.loop</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_client</span>
@@ -8365,7 +8417,7 @@ earnings_record          neutral   1.0            beat estimates in 4 of 4 quart
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>kept: 8 | irrelevant: 7 | failed: 0 | unchecked: 5
+<pre>kept: 8 | irrelevant: 8 | failed: 0 | unchecked: 4
 market    Here’s What a $10,000 Investment in Nvidia Stock Will Be Worth by 2030
 market    The Bond Market Is Sending a Warning to Nvidia Shareholders
 general   The next AI race will be won at the credit desk
@@ -8384,14 +8436,14 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.workflows.news_specialists</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_insights</span><span class="p">,</span> <span class="n">make_llm_analyzer</span>
 
 <span class="n">insights</span> <span class="o">=</span> <span class="n">build_insights</span><span class="p">(</span><span class="n">classified</span><span class="p">,</span> <span class="s2">"NVIDIA"</span><span class="p">,</span> <span class="n">make_llm_analyzer</span><span class="p">(</span><span class="n">client</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insights</span><span class="o">.</span><span class="n">insights</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">"published"</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="s2">"category"</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="s2">"sentiment"</span><span class="p">],</span> <span class="s2">"|"</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="s2">"summary"</span><span class="p">][:</span><span class="mi">100</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">"published"</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="s2">"category"</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="s2">"sentiment"</span><span class="p">],</span> <span class="s2">"|"</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="s2">"summary"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -8404,14 +8456,141 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>2026-10-19 market positive | Emerging growth opportunities in the AI ecosystem are anticipated, and Nvidia stock is projected to 
-2026-10-18 market negative | Bond investors are showing less confidence in Nvidia, which serves as a warning to Nvidia shareholde
-2026-10-18 general positive | Nvidia is launching a $500 billion financing initiative as the AI race shifts its focus to capital m
-2026-10-18 general positive | Honeywell has launched its Forge Cognition platform, which is supported by NVIDIA.
-2026-10-18 market positive | Nvidia stock has historically produced an average return of 13% in November this decade, but there i
-2026-10-18 market neutral | NVIDIA closed at $217.23 on October 15 and has returned 9.52% over the last six months, while also b
-2026-10-18 general positive | Elon Musk praised Nvidia CEO Jensen Huang as SpaceX and Nvidia collaborate on AI computers for space
-2026-10-18 general positive | Nvidia has announced its largest share repurchase authorization in market history, with the company 
+<pre>2026-10-19 market positive | Emerging growth opportunities in the AI ecosystem are anticipated, and Nvidia stock is projected to increase in value by 2030.
+2026-10-18 market negative | Bond investors are showing less confidence in Nvidia, which serves as a warning to Nvidia shareholders.
+2026-10-18 general positive | Nvidia is launching a $500 billion financing initiative as the AI race shifts its focus to capital markets, indicating that engineering is no longer the only critical factor in this competition.
+2026-10-18 general positive | Honeywell has introduced the Forge Cognition platform, which is backed by Nvidia.
+2026-10-18 market positive | Nvidia stock has historically produced an average return of 13% in November this decade, although there is a suggestion that one factor could disrupt this trend.
+2026-10-18 market neutral | NVIDIA closed at $217.23 on October 15 and has returned 9.52% over the last six months, while also being a key player in designing processors for artificial intelligence.
+2026-10-18 general positive | Elon Musk praised Nvidia CEO Jensen Huang, highlighting their collaboration on AI computers for space, which aims to develop AI data centers in that environment.
+2026-10-18 general positive | Nvidia has announced its largest share repurchase authorization in market history, with the company currently valued at $5 trillion.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=14f32889">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p><strong>One article through the specialist chain.</strong> <code>build_insights</code> does this for every article. Here it is done by hand for one, so each step is visible: the label is <strong>routed</strong> to a specialist, <strong>Extract</strong> pulls short facts and a sentiment, and <strong>Summarize</strong> writes the summary from those facts only. Python validates each reply (labels, sentiment, and that every number appears in the article).</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3774fe79">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">finagent.workflows.news_classify</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_user_message</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">finagent.workflows.news_specialists</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EXTRACT_PROMPT</span><span class="p">,</span> <span class="n">MAX_FACTS</span><span class="p">,</span> <span class="n">SUMMARIZE_PROMPT</span><span class="p">,</span> <span class="n">parse_extract</span><span class="p">,</span> <span class="n">parse_summary</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ask</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="n">reply</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">MODEL</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">TEMPERATURE</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"system"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">system</span><span class="p">},</span> <span class="p">{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">user</span><span class="p">}])</span>
+    <span class="k">return</span> <span class="n">reply</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="s2">""</span>
+
+<span class="n">article</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="n">classified</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">specialist</span> <span class="o">=</span> <span class="n">route</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Article   :"</span><span class="p">,</span> <span class="n">article</span><span class="o">.</span><span class="n">headline</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Classify  :"</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="s2">"-&gt;"</span><span class="p">,</span> <span class="s2">"routed to"</span><span class="p">,</span> <span class="n">specialist</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="n">facts</span><span class="p">,</span> <span class="n">sentiment</span> <span class="o">=</span> <span class="n">parse_extract</span><span class="p">(</span>
+    <span class="n">ask</span><span class="p">(</span><span class="n">EXTRACT_PROMPT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specialist</span><span class="o">=</span><span class="n">specialist</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">"NVIDIA"</span><span class="p">,</span>
+                              <span class="n">focus</span><span class="o">=</span><span class="n">specialist</span><span class="o">.</span><span class="n">focus</span><span class="p">,</span> <span class="n">max_facts</span><span class="o">=</span><span class="n">MAX_FACTS</span><span class="p">),</span>
+        <span class="n">build_user_message</span><span class="p">(</span><span class="n">article</span><span class="p">)),</span> <span class="n">article</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Extract   : facts ="</span><span class="p">,</span> <span class="n">facts</span><span class="p">,</span> <span class="s2">"| sentiment ="</span><span class="p">,</span> <span class="n">sentiment</span><span class="p">)</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">parse_summary</span><span class="p">(</span>
+    <span class="n">ask</span><span class="p">(</span><span class="n">SUMMARIZE_PROMPT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">specialist</span><span class="o">=</span><span class="n">specialist</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">"NVIDIA"</span><span class="p">),</span>
+        <span class="s2">"Key facts:</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">facts</span><span class="p">)),</span> <span class="n">article</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Summarize :"</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Article   : The Bond Market Is Sending a Warning to Nvidia Shareholders
+Classify  : market -&gt; routed to Market specialist
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Extract   : facts = ['Bond investors are showing less confidence in Nvidia.', 'This is a warning to Nvidia shareholders.'] | sentiment = negative
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Summarize : Bond investors are showing less confidence in Nvidia, which serves as a warning to Nvidia shareholders.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=764ae364">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p><strong>The news workflow's final output</strong> is one <code>NewsInsight</code> per article (category, summary, sentiment, source URL, date). There is no single combined news summary by design: the agent's Synthesis step (2.8) reads these insights together with the fundamentals and earnings. A quick roll-up, computed by Python:</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b3bef111">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"kept after classify   :"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">classified</span><span class="o">.</span><span class="n">items</span><span class="p">),</span> <span class="s2">"| dropped as irrelevant:"</span><span class="p">,</span> <span class="n">classified</span><span class="o">.</span><span class="n">irrelevant</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"insights produced     :"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">insights</span><span class="o">.</span><span class="n">insights</span><span class="p">),</span> <span class="s2">"| failed a check:"</span><span class="p">,</span> <span class="n">insights</span><span class="o">.</span><span class="n">failed</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"routed to specialist  :"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">route</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">"category"</span><span class="p">])</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insights</span><span class="o">.</span><span class="n">insights</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"sentiment mix         :"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">"sentiment"</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insights</span><span class="o">.</span><span class="n">insights</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"newest article        :"</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">"published"</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">insights</span><span class="o">.</span><span class="n">insights</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>kept after classify   : 8 | dropped as irrelevant: 8
+insights produced     : 8 | failed a check: 0
+routed to specialist  : {'Market specialist': 4, 'News specialist': 4}
+sentiment mix         : {'positive': 6, 'negative': 1, 'neutral': 1}
+newest article        : 2026-10-19
 </pre>
 </div>
 </div>
@@ -8422,12 +8601,14 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># The same chain as one tool call (what the agent actually uses):</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">finagent.tools.news</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_news_insights</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">get_news_insights</span><span class="p">(</span><span class="s2">"AADX"</span><span class="p">))</span>
+<span class="n">tool_result</span> <span class="o">=</span> <span class="n">get_news_insights</span><span class="p">(</span><span class="s2">"AADX"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tool_result</span><span class="p">),</span> <span class="s2">"insights; first one:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tool_result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tool_result</span> <span class="k">else</span> <span class="s2">"none"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8437,10 +8618,12 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[15]:</div>
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>3</pre>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>3 insights; first one:
+{'category': 'earnings', 'summary': 'Applied Aerospace &amp; Defense expects mid-teens organic revenue growth in 2027 and 2028, with RBC supporting this outlook based on defense demand and backlog.', 'sentiment': 'positive', 'source_url': 'https://finnhub.io/api/news?id=227fd0e89b1e80a476045facd0d62b89eb7f53d13204fad2ca3e338dbe0530f1', 'published': '2026-10-13'}
+</pre>
 </div>
 </div>
 </div>
@@ -8453,6 +8636,7 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="2.8-Synthesis-(the-thesis)">2.8 Synthesis (the thesis)<a class="anchor-link" href="#2.8-Synthesis-(the-thesis)">¶</a></h3><p>The model writes the thesis. <strong>Python</strong> builds the gaps and sources, checks every evidence number, and caps the confidence.</p>
+<p>News is one input here: the model reads the insights from 2.7 together with fundamentals and earnings.</p>
 </div>
 </div>
 </div>
@@ -8461,7 +8645,7 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.agent.synthesis</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze_run</span>
@@ -8483,7 +8667,7 @@ general   How Nvidia Could Make $150 Billion Look Small
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>bullish high
-NVIDIA Corporation demonstrates strong financial health and growth potential, supported by a robust net cash position of $23.61 billion and a healthy profit margin of 63.66%. The company's revenue growth rate of 1.059 indicates solid sales performance, while the forward P/E ratio of 13.45 suggests that analysts expect future earnings growth. Additionally, positive sentiment from recent news highlights emerging opportunities in the AI ecosystem, further bolstering investor confidence.
+NVIDIA Corporation demonstrates strong financial health and growth potential, supported by a solid profitability profile and a positive outlook from analysts. The company has a net cash position of $23.6 billion, indicating a strong balance sheet, and its revenue growth rate of 1.059 suggests robust sales performance. Additionally, the forward P/E ratio of 13.45 being lower than the trailing P/E of 27.07 indicates expected earnings growth, further bolstered by a healthy profit margin of 63.66%.
 notes from Python: []
 fell back to rule-based? None
 </pre>
@@ -8507,7 +8691,7 @@ fell back to rule-based? None
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
@@ -8560,7 +8744,7 @@ fell back to rule-based? None
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Live: run the same ticker twice with memory on (a temp file, so data/ is untouched).</span>
@@ -8661,7 +8845,7 @@ lines in memory file: 2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -8678,43 +8862,73 @@ lines in memory file: 2
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 16%]
-</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 33%]
-</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 50%]
-</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 16%]
+</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 67%]
-</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 33%]
+</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 84%]
-</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">      [100%]</span>
-<span class="ansi-green-intense-fg ansi-bold">427 passed</span><span class="ansi-green-fg"> in 0.76s</span>
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 50%]
+</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 67%]
+</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg"> [ 83%]
+</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span></pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">.</span><span class="ansi-green-fg">    [100%]</span>
+<span class="ansi-green-intense-fg ansi-bold">429 passed</span><span class="ansi-green-fg"> in 1.90s</span>
 </pre>
 </div>
 </div>
@@ -8736,7 +8950,7 @@ lines in memory file: 2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [23]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleNamespace</span>
@@ -8784,7 +8998,7 @@ lines in memory file: 2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
@@ -8832,7 +9046,7 @@ lines in memory file: 2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span>
@@ -8853,7 +9067,7 @@ lines in memory file: 2
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[22]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[25]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>['get_news_insights: stale, the newest article is 41 days old']</pre>
 </div>
@@ -8876,7 +9090,7 @@ lines in memory file: 2
 <li><strong>Refine:</strong> a failing draft goes back through synthesis with the judge's notes. The revision passes the same Python guards as a first draft (verifiable evidence, confidence ceiling), so it cannot invent evidence to raise its score.</li>
 <li><strong>Stop:</strong> on a pass, after at most <strong>2 revisions</strong>, or if the judge or reviser fails. The best draft is kept, and a draft that never passes is marked <em>not passed</em>.</li>
 </ol>
-<p><strong>How iteration was done during development:</strong> compare the first and revised drafts on the same collected data, record scores and critical issues, and review by hand whether a revision addressed the feedback before changing prompts or thresholds. The 427 offline tests pin the rule, the revision cap and every failure path.</p>
+<p><strong>How iteration was done during development:</strong> compare the first and revised drafts on the same collected data, record scores and critical issues, and review by hand whether a revision addressed the feedback before changing prompts or thresholds. The 429 offline tests pin the rule, the revision cap and every failure path.</p>
 <p><strong>Honest limits:</strong> by default the same model writes and judges (<code>config.JUDGE_MODEL</code>), which can be lenient, and the judge has not been calibrated against human ratings. See 3.7.</p>
 </div>
 </div>
@@ -8897,7 +9111,7 @@ lines in memory file: 2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [23]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [26]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">finagent.agent.synthesis</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynthesisOutcome</span>
@@ -8951,7 +9165,7 @@ final stance: bullish
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># The verdict rule: mean &gt;= 4.0, no score below 3, no critical issue.</span>

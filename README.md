@@ -223,6 +223,16 @@ Trace (step 0 = pre-flight check):
    2  get_earnings_history   ok
    3  get_news_insights      ok
 
+Results collected:
+  get_fundamentals       gaps: 0   warnings: 0
+  get_earnings_history   gaps: 0   warnings: 0
+  get_news_insights      8 items
+
+News insights (category, sentiment, summary):
+  2026-10-18  market   negative Bond investors are showing less confidence in Nvidia, which serves as a warning to Nvidia shareholders.
+  2026-10-18  general  positive Honeywell has introduced a new platform called Forge Cognition, which is backed by Nvidia.
+  ...
+
 Reflection: Nothing to retry; 0 gaps remain (retrying cannot fix them).
 
 ANALYSIS  |  stance: bullish  |  confidence: medium
@@ -254,7 +264,7 @@ To run a notebook locally, register the environment as a kernel (`python -m pip 
 
 ## Testing
 
-Run the automated tests without API keys or live model calls (427 tests):
+Run the automated tests without API keys or live model calls (429 tests):
 
 ```bash
 python -m pytest -q

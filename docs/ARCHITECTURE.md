@@ -131,7 +131,7 @@ The choices a reader will ask about, with the reason and the place in the code. 
 | The reviser is synthesis itself | A revision passes the same Python guards as a first draft, so it cannot invent evidence to raise its score. The best draft is kept, and a draft that never passes is marked, never passed silently. | `evaluate_and_optimize`, `synthesize(feedback, previous)` |
 | The judge model is its own setting | The same model writes and judges by default, which can be lenient. Changing config.JUDGE_MODEL is the fix. | `config.JUDGE_MODEL` |
 | **Engineering** | | |
-| Everything that calls out is injectable | runner, reflector, analyst, evaluator, classifier, analyzer, judge and reviser are parameters, so the whole suite (427 tests) runs with no model and no network. | the `= default` arguments in each signature |
+| Everything that calls out is injectable | runner, reflector, analyst, evaluator, classifier, analyzer, judge and reviser are parameters, so the whole suite (429 tests) runs with no model and no network. | the `= default` arguments in each signature |
 | Free-tier limits checked before building | Finnhub 60 calls a minute, Alpha Vantage 25 a day, NewsAPI about 100 a day; yfinance is unofficial. | — |
 
 ## Data shapes between stages

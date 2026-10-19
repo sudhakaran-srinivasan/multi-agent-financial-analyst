@@ -101,6 +101,25 @@ def _result_line(name: str, data: Any) -> str:
     return f"  {name:<22} ok"
 
 
+_NEWS_SUMMARY_CHARS = 110
+
+
+def _news_lines(results: dict[str, Any]) -> list[str]:
+    """The news workflow's output: one line per analyzed article, if any."""
+    news = results.get("get_news_insights")
+    if not isinstance(news, list) or not news:
+        return []
+    lines = ["", "News insights (category, sentiment, summary):"]
+    for item in news:
+        summary = str(item.get("summary", ""))
+        if len(summary) > _NEWS_SUMMARY_CHARS:
+            summary = summary[:_NEWS_SUMMARY_CHARS].rstrip() + "..."
+        lines.append(f"  {item.get('published', '?')}  "
+                     f"{item.get('category', '?'):<8} "
+                     f"{item.get('sentiment', '?'):<8} {summary}")
+    return lines
+
+
 def format_report(result: LoopResult) -> str:
     """Turn a LoopResult into a short, human-readable report (pure function)."""
     lines = [
@@ -120,6 +139,7 @@ def format_report(result: LoopResult) -> str:
     lines += ["", "Results collected:"]
     if result["results"]:
         lines += [_result_line(n, d) for n, d in result["results"].items()]
+        lines += _news_lines(result["results"])
     else:
         lines.append("  (none)")
     if result["fatal_error"]:

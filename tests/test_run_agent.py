@@ -35,6 +35,27 @@ def test_report_shows_stop_reason_trace_and_results():
     assert "0 items" in text  # the empty news list is visible, not hidden
 
 
+def test_report_lists_news_insights_when_there_are_any():
+    news = [
+        {"category": "market", "summary": "Bond investors are cautious.",
+         "sentiment": "negative", "source_url": "https://example.com/a",
+         "published": "2026-10-18"},
+        {"category": "earnings", "summary": "x" * 200,
+         "sentiment": "positive", "source_url": "https://example.com/b",
+         "published": "2026-10-17"},
+    ]
+    result = {**SAMPLE_LOOP_RESULT, "results": {"get_news_insights": news}}
+    text = format_report(result)
+    assert "News insights" in text
+    assert "2026-10-18  market   negative Bond investors are cautious." in text
+    assert "earnings positive " + "x" * 110 + "..." in text
+    assert "x" * 111 not in text  # long summaries are cut to one line
+
+
+def test_report_has_no_news_block_when_the_news_list_is_empty():
+    assert "News insights" not in format_report(SAMPLE_LOOP_RESULT)
+
+
 def test_report_shows_the_plan_and_its_emphasis():
     text = format_report(SAMPLE_LOOP_RESULT)
     assert "Plan:" in text and "1. get_fundamentals:" in text
