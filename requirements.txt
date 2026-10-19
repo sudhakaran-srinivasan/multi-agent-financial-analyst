@@ -1,0 +1,8 @@
+# Runtime dependencies for the finagent command-line application.
+# Kept in sync with [project].dependencies in pyproject.toml.
+# Preferred install (also installs the `finagent` package): pip install -e ".[dev]"
+openai
+python-dotenv
+finnhub-python
+yfinance==1.7.0
+pandas
