@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1020" width="1400" height="1020" role="img" aria-label="Overview of the research agent: a question enters run_pipeline; profile and plan feed a tool loop (fundamentals, earnings, news workflow); reflection, memory read and synthesis follow; the evaluator scores a draft and can send notes back up to twice; memory write and the final answer come last."><style>
+.bg{fill:#fbfaf7}
+.box{stroke-width:1.4}
+.plain{fill:#f3efe8;stroke:#8c8579}
+.tool{fill:#ffffff;stroke:#b3aea4}
+.model{fill:#e6e2fb;stroke:#6b5fd1}
+.code{fill:#f9e3dc;stroke:#c0634a}
+.mixed{fill:#ffffff;stroke:#7c7468}
+.sm{fill:#6b5fd1}.sc{fill:#c0634a}
+.grp-agent{fill:#f1effd;stroke:#6b5fd1;stroke-width:1.4}
+.grp-news{fill:#fdf1ed;stroke:#c0634a;stroke-width:1.4}
+.grp-loop{fill:none;stroke:#9a95e0;stroke-width:1.4;stroke-dasharray:6 5}
+.card{fill:#ffffff;stroke:#cfcac1;stroke-width:1.2}
+.store{fill:#f3efe8;stroke:#8c8579;stroke-width:1.2;stroke-dasharray:5 4}
+.h1{font:600 21px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#2a2926}
+.h-agent{font:600 22px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#3b3399}
+.h-news{font:600 21px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#8a3520}
+.h-loop{font:500 17px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#2a2926}
+.t{font:600 17px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#2a2926}
+.m{font:500 12.5px ui-monospace,Menlo,Consolas,monospace;fill:#3d3a35}
+.s{font:400 13.5px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#5f5b54}
+.l{font:400 13px "Helvetica Neue",Helvetica,Arial,sans-serif;fill:#5f5b54}
+.l.loopt{fill:#0e7c86;font-weight:600}
+.edge{fill:none;stroke:#8c8579;stroke-width:1.8}
+.edge.loop{stroke:#0e7c86;stroke-width:2}
+.ah{fill:#8c8579}.ahl{fill:#0e7c86}
+</style><defs><marker id="ahe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ahs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="ahle" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahl"/></marker><marker id="ahls" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahl"/></marker></defs>
+<rect class="bg" x="0" y="0" width="1400" height="1020"/>
+<rect class="box plain" x="470" y="20" width="360" height="72" rx="10"/>
+<text class="t" x="650.0" y="47" text-anchor="middle">Should I buy NVDA?</text>
+<text class="s" x="650.0" y="65" text-anchor="middle">run_agent  →  run_pipeline(ticker)</text>
+<polyline class="edge" points="650,92 650,140" marker-end="url(#ahe)"/>
+<rect class="grp-agent" x="30" y="140" width="980" height="360" rx="22"/>
+<text class="h-agent" x="60" y="182" text-anchor="start">Research agent · run_research_loop + reflect + synthesize</text>
+<rect class="box code" x="60" y="210" width="180" height="100" rx="10"/>
+<text class="t" x="150.0" y="237" text-anchor="middle">Pre-flight</text>
+<text class="m" x="150.0" y="256" text-anchor="middle">get_company_profile</text>
+<text class="s" x="150.0" y="274" text-anchor="middle">bad ticker stops here</text>
+<polyline class="edge" points="240,260 280,260" marker-end="url(#ahe)"/>
+<rect class="box model" x="280" y="210" width="180" height="100" rx="10"/>
+<text class="t" x="370.0" y="237" text-anchor="middle">Plan</text>
+<text class="m" x="370.0" y="256" text-anchor="middle">plan_research</text>
+<text class="s" x="370.0" y="274" text-anchor="middle">list the steps</text>
+<polyline class="edge" points="460,260 500,260" marker-end="url(#ahe)"/>
+<rect class="grp-loop" x="500" y="198" width="490" height="124" rx="14"/>
+<text class="h-loop" x="516" y="222" text-anchor="start">Tool loop (max 8 steps) ↻</text>
+<rect class="box tool" x="512" y="236" width="150" height="78" rx="10"/>
+<text class="t" x="587.0" y="263" text-anchor="middle">Financials</text>
+<text class="m" x="587.0" y="282" text-anchor="middle">get_fundamentals</text>
+<text class="s" x="587.0" y="300" text-anchor="middle">valuation, margins</text>
+<rect class="box tool" x="674" y="236" width="150" height="78" rx="10"/>
+<text class="t" x="749.0" y="263" text-anchor="middle">Earnings</text>
+<text class="m" x="749.0" y="282" text-anchor="middle">get_earnings_history</text>
+<text class="s" x="749.0" y="300" text-anchor="middle">beat or miss</text>
+<rect class="box code" x="836" y="236" width="150" height="78" rx="10"/>
+<text class="t" x="911.0" y="263" text-anchor="middle">News</text>
+<text class="m" x="911.0" y="282" text-anchor="middle">get_news_insights</text>
+<text class="s" x="911.0" y="300" text-anchor="middle">runs the workflow</text>
+<polyline class="edge" points="600,322 600,346 205,346 205,370" marker-end="url(#ahe)"/>
+<text class="l" x="400" y="338" text-anchor="middle">LoopResult</text>
+<rect class="box code" x="60" y="370" width="290" height="100" rx="10"/>
+<text class="t" x="205.0" y="397" text-anchor="middle">② Reflection</text>
+<text class="m" x="205.0" y="416" text-anchor="middle">reflect</text>
+<text class="s" x="205.0" y="434" text-anchor="middle">retry failed tools once,</text>
+<text class="s" x="205.0" y="452" text-anchor="middle">report the gaps that remain</text>
+<polyline class="edge" points="350,420 390,420" marker-end="url(#ahe)"/>
+<rect class="box code" x="390" y="370" width="290" height="100" rx="10"/>
+<text class="t" x="535.0" y="397" text-anchor="middle">③ Memory read</text>
+<text class="m" x="535.0" y="416" text-anchor="middle">load_prior</text>
+<text class="s" x="535.0" y="434" text-anchor="middle">last run of this ticker,</text>
+<text class="s" x="535.0" y="452" text-anchor="middle">under 30 days old</text>
+<polyline class="edge" points="680,420 720,420" marker-end="url(#ahe)"/>
+<rect class="box mixed" x="720" y="370" width="270" height="122" rx="10"/>
+<rect class="sm" x="720" y="376" width="6" height="55.0"/>
+<rect class="sc" x="720" y="431.0" width="6" height="55.0"/>
+<text class="t" x="855.0" y="397" text-anchor="middle">④ Synthesis</text>
+<text class="m" x="855.0" y="416" text-anchor="middle">analyze_run</text>
+<text class="s" x="855.0" y="434" text-anchor="middle">model writes the thesis;</text>
+<text class="s" x="855.0" y="452" text-anchor="middle">Python builds signals, gaps,</text>
+<text class="s" x="855.0" y="470" text-anchor="middle">sources and checks numbers</text>
+<polyline class="edge" points="790,492 790,560" marker-end="url(#ahe)"/>
+<text class="l" x="782" y="520" text-anchor="end">draft</text>
+<polyline class="edge loop" points="920,560 920,492" marker-end="url(#ahle)"/>
+<text class="l loopt" x="930" y="520" text-anchor="start">notes, max 2 ↻</text>
+<rect class="box mixed" x="720" y="560" width="270" height="112" rx="10"/>
+<rect class="sm" x="720" y="566" width="6" height="50.0"/>
+<rect class="sc" x="720" y="616.0" width="6" height="50.0"/>
+<text class="t" x="855.0" y="587" text-anchor="middle">⑤ Evaluator</text>
+<text class="m" x="855.0" y="606" text-anchor="middle">evaluate_and_optimize</text>
+<text class="s" x="855.0" y="624" text-anchor="middle">judge scores 6 criteria;</text>
+<text class="s" x="855.0" y="642" text-anchor="middle">Python decides pass or revise</text>
+<polyline class="edge" points="855,672 855,720" marker-end="url(#ahe)"/>
+<rect class="box code" x="720" y="720" width="270" height="96" rx="10"/>
+<text class="t" x="855.0" y="747" text-anchor="middle">⑥ Memory write</text>
+<text class="m" x="855.0" y="766" text-anchor="middle">save_run + diff_runs</text>
+<text class="s" x="855.0" y="784" text-anchor="middle">append this run,</text>
+<text class="s" x="855.0" y="802" text-anchor="middle">report what changed</text>
+<polyline class="edge" points="855,816 855,862" marker-end="url(#ahe)"/>
+<rect class="box plain" x="720" y="862" width="270" height="64" rx="10"/>
+<text class="t" x="855.0" y="889" text-anchor="middle">Final answer</text>
+<text class="s" x="855.0" y="907" text-anchor="middle">PipelineResult</text>
+<rect class="store" x="390" y="735" width="290" height="66" rx="10"/>
+<text class="m" x="535" y="764" text-anchor="middle">data/memory.jsonl</text>
+<text class="s" x="535" y="784" text-anchor="middle">append-only, one line per run</text>
+<polyline class="edge" points="720,768 680,768" marker-end="url(#ahe)"/>
+<text class="l" x="700" y="790" text-anchor="middle">adds</text>
+<polyline class="edge" points="535,735 535,470" marker-end="url(#ahe)"/>
+<text class="l" x="545" y="640" text-anchor="start">reads</text>
+<rect class="card" x="30" y="560" width="330" height="214" rx="12"/>
+<text class="t" x="50" y="592" text-anchor="start">Python checks the model</text>
+<text class="s" x="50" y="622" text-anchor="start">• Every number cited must exist in the tool data</text>
+<text class="s" x="50" y="650" text-anchor="start">• Confidence is capped by missing data</text>
+<text class="s" x="50" y="678" text-anchor="start">• Gaps and sources are built in code</text>
+<text class="s" x="50" y="706" text-anchor="start">• Code decides pass or revise</text>
+<text class="s" x="50" y="734" text-anchor="start">• A failed fetch raises; reflection retries it</text>
+<rect class="grp-news" x="1050" y="140" width="320" height="580" rx="22"/>
+<text class="h-news" x="1070" y="182" text-anchor="start">News workflow</text>
+<text class="s" x="1070" y="204" text-anchor="start">chain of fixed steps, then routing</text>
+<rect class="box code" x="1070" y="224" width="280" height="78" rx="10"/>
+<text class="t" x="1210.0" y="251" text-anchor="middle">Ingest</text>
+<text class="m" x="1210.0" y="270" text-anchor="middle">collect_articles</text>
+<text class="s" x="1210.0" y="288" text-anchor="middle">Finnhub, one 90-day call</text>
+<rect class="box code" x="1070" y="318" width="280" height="92" rx="10"/>
+<text class="t" x="1210.0" y="345" text-anchor="middle">Preprocess</text>
+<text class="m" x="1210.0" y="364" text-anchor="middle">select_articles</text>
+<text class="s" x="1210.0" y="382" text-anchor="middle">clean, dedupe, drop old,</text>
+<text class="s" x="1210.0" y="400" text-anchor="middle">rank by company name</text>
+<rect class="box mixed" x="1070" y="426" width="280" height="78" rx="10"/>
+<rect class="sm" x="1070" y="432" width="6" height="33.0"/>
+<rect class="sc" x="1070" y="465.0" width="6" height="33.0"/>
+<text class="t" x="1210.0" y="453" text-anchor="middle">Classify</text>
+<text class="m" x="1210.0" y="472" text-anchor="middle">classify_articles</text>
+<text class="s" x="1210.0" y="490" text-anchor="middle">model labels, Python validates</text>
+<rect class="box code" x="1070" y="520" width="280" height="78" rx="10"/>
+<text class="t" x="1210.0" y="547" text-anchor="middle">Route</text>
+<text class="m" x="1210.0" y="566" text-anchor="middle">route</text>
+<text class="s" x="1210.0" y="584" text-anchor="middle">label picks the specialist</text>
+<rect class="box mixed" x="1070" y="614" width="280" height="92" rx="10"/>
+<rect class="sm" x="1070" y="620" width="6" height="40.0"/>
+<rect class="sc" x="1070" y="660.0" width="6" height="40.0"/>
+<text class="t" x="1210.0" y="641" text-anchor="middle">Specialists</text>
+<text class="m" x="1210.0" y="660" text-anchor="middle">earnings / market / general</text>
+<text class="s" x="1210.0" y="678" text-anchor="middle">extract, then summarize;</text>
+<text class="s" x="1210.0" y="696" text-anchor="middle">numbers must be in the article</text>
+<polyline class="edge" points="1210,302 1210,318" marker-end="url(#ahe)"/>
+<polyline class="edge" points="1210,410 1210,426" marker-end="url(#ahe)"/>
+<polyline class="edge" points="1210,504 1210,520" marker-end="url(#ahe)"/>
+<polyline class="edge" points="1210,598 1210,614" marker-end="url(#ahe)"/>
+<polyline class="edge" points="986,275 1050,275" marker-end="url(#ahe)" marker-start="url(#ahs)"/>
+<text class="l" x="1018" y="262" text-anchor="middle">calls</text>
+<text class="l" x="1018" y="296" text-anchor="middle">insights</text>
+<rect class="box model" x="60" y="954" width="22" height="22" rx="5"/>
+<text class="s" x="94" y="971" text-anchor="start">Model decides what to do</text>
+<rect class="box code" x="330" y="954" width="22" height="22" rx="5"/>
+<text class="s" x="364" y="971" text-anchor="start">Fixed steps: Python decides</text>
+<rect class="box mixed" x="640" y="954" width="22" height="22" rx="5"/>
+<rect class="sm" x="640" y="958" width="4" height="7"/><rect class="sc" x="640" y="965" width="4" height="7"/>
+<text class="s" x="674" y="971" text-anchor="start">Model writes, Python checks</text>
+<polyline class="edge loop" points="960,965 1000,965" marker-end="url(#ahle)"/>
+<text class="s" x="1012" y="971" text-anchor="start">revise loop</text></svg>

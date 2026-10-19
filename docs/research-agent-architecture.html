@@ -1,0 +1,410 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Research Agent Architecture</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: a technical reference sheet. One column, wide figures that scroll inside their own frame, tables for names and decisions. */
+:root {
+  --bg: #f3f5f8; --surface: #ffffff; --fg: #141a22; --fg-soft: #3b4656; --muted: #536073; --line: #cdd5df;
+  --model: #2a5bd7; --model-tint: #e5ecfc; --code: #17795a; --code-tint: #e0f2ea; --ext: #edf0f4; --loop: #b3500f;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1218; --surface: #161b23; --fg: #e8ebf0; --fg-soft: #b6c0ce; --muted: #98a3b3; --line: #2c3544;
+  --model: #86a9ff; --model-tint: #19243f; --code: #62d2a2; --code-tint: #12302a; --ext: #1b212b; --loop: #f2a46c; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1218; --surface: #161b23; --fg: #e8ebf0; --fg-soft: #b6c0ce; --muted: #98a3b3; --line: #2c3544;
+  --model: #86a9ff; --model-tint: #19243f; --code: #62d2a2; --code-tint: #12302a; --ext: #1b212b; --loop: #f2a46c; color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55;
+  padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+header h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0 0 10px; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 0; max-width: 68ch; color: var(--fg-soft); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.meta span { font-variant-numeric: tabular-nums; }
+section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+h2 { font-size: 21px; margin: 0; font-weight: 600; text-wrap: balance; }
+section > p { margin: 0; max-width: 72ch; color: var(--fg-soft); }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: 13px; color: var(--muted); align-items: center; }
+.chip { display: inline-block; font: 600 10px var(--sans); letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--fg); white-space: nowrap; }
+.chip.model { background: var(--model-tint); border-color: var(--model); }
+.chip.code { background: var(--code-tint); border-color: var(--code); }
+.chip.mixed { background: var(--surface); border-color: var(--fg-soft); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.fig-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.fig-scroll svg { display: block; width: 100%; height: auto; }
+.f1 svg { min-width: 860px; } .f2 svg { min-width: 980px; } .f3 svg { min-width: 760px; }
+figcaption { font-size: 13px; color: var(--muted); max-width: 80ch; }
+.node { fill: var(--surface); stroke: var(--fg-soft); stroke-width: 1.2; }
+.node.model { fill: var(--model-tint); stroke: var(--model); }
+.node.code { fill: var(--code-tint); stroke: var(--code); }
+.node.mixed { fill: var(--surface); stroke: var(--fg-soft); }
+.node.ext { fill: var(--ext); stroke: var(--line); stroke-dasharray: 5 4; }
+.node.store { fill: var(--ext); stroke: var(--fg-soft); }
+.stripe-model { fill: var(--model); } .stripe-code { fill: var(--code); }
+.pill { fill: var(--surface); stroke: var(--fg-soft); stroke-width: 1; }
+.pill.model { fill: var(--model-tint); stroke: var(--model); }
+.pill.code { fill: var(--code-tint); stroke: var(--code); }
+.pill-t { font: 600 9px var(--sans); letter-spacing: 0.06em; fill: var(--fg); }
+.t-title { font: 600 13px var(--sans); fill: var(--fg); }
+.t-title.mono { font: 500 12.5px var(--mono); }
+.t-sub { font: 400 11.5px var(--sans); fill: var(--muted); }
+.t-sub.mono { font: 400 11.5px var(--mono); fill: var(--fg); }
+.lbl { font: 400 11px var(--sans); fill: var(--muted); } .lbl.strong { font-weight: 600; fill: var(--fg); } .lbl.loopt { fill: var(--loop); font-weight: 500; }
+.edge { fill: none; stroke: var(--fg-soft); stroke-width: 1.4; } .edge.loop { stroke: var(--loop); stroke-width: 1.7; }
+.arrowhead { fill: var(--fg-soft); } .arrowhead-loop { fill: var(--loop); }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 640px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--bg); }
+tbody tr:last-child td { border-bottom: 0; }
+tr.grp th { background: var(--bg); color: var(--fg); font-size: 13px; letter-spacing: 0; text-transform: none; font-weight: 600; padding-top: 14px; }
+td code { white-space: nowrap; }
+td:first-child { font-weight: 500; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.cols > div { min-width: 0; }
+.cols h3 { font-size: 14px; margin: 0 0 6px; font-weight: 600; }
+.cols ul { margin: 0; padding-left: 18px; color: var(--fg-soft); font-size: 14px; }
+.cols li { margin-bottom: 5px; }
+</style>
+
+<main>
+<header>
+  <h1>Research Agent Architecture</h1>
+  <p>An autonomous investment research agent for one stock at a time. The model decides which data to gather and writes the thesis; Python checks every number, computes the signals, decides when to retry, and decides when an analysis is good enough. The names below are the names in the code.</p>
+  <div class="meta"><span>Repo: finagent</span><span>Updated Oct 14, 2026</span><span>427 offline tests</span><span>Educational project, not investment advice</span></div>
+</header>
+
+<section id="flow">
+  <h2>End-to-end flow</h2>
+  <div class="legend"><span>Who decides at each step:</span> <span class='chip model'>MODEL</span> <span class='chip code'>PYTHON</span> <span class='chip mixed'>MODEL + PYTHON</span> <span>Orange arrow: the revise loop. Dashed boxes: outside services.</span></div>
+  <figure class="f1">
+    <div class="fig-scroll"><svg viewBox="0 0 1000 820" role="img" aria-label="End-to-end flow: run_pipeline chains six stages, research loop, reflect, memory read, synthesis, evaluate and optimize, memory write. Evaluation can send reviewer notes back to synthesis up to twice."><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker>
+<marker id="arrloop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead-loop"/></marker>
+</defs>
+<rect class="node plain" x="70" y="10" width="380" height="44" rx="6"/>
+<text class="t-title mono" x="84" y="32">run_agent  →  run_pipeline(ticker)</text>
+<text class="t-sub" x="84" y="50">flags: --analyze  --evaluate  --no-memory  --json</text>
+<polyline class="edge" points="260,54 260,74" marker-end="url(#arr)"/>
+<rect class="node mixed" x="70" y="74" width="380" height="70" rx="6"/>
+<rect class="stripe-model" x="70" y="74" width="5" height="35.0" />
+<rect class="stripe-code" x="70" y="109.0" width="5" height="35.0" />
+<text class="t-title mono" x="84" y="96">① run_research_loop</text>
+<text class="t-sub" x="84" y="114">pre-flight profile, plan_research, then tool calls</text>
+<text class="t-sub" x="84" y="129">the model picks the tools; capped at 8 steps</text>
+<rect class="pill mixed" x="342.6" y="82" width="99.4" height="16" rx="8"/>
+<text class="pill-t mixed" x="392.3" y="93.5" text-anchor="middle">MODEL + PYTHON</text>
+<rect class="node code" x="70" y="188" width="380" height="70" rx="6"/>
+<text class="t-title mono" x="84" y="210">② reflect</text>
+<text class="t-sub" x="84" y="228">retries each failed tool once, if a retry can help</text>
+<text class="t-sub" x="84" y="243">reports the data gaps that remain</text>
+<rect class="pill code" x="391.4" y="196" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="416.7" y="207.5" text-anchor="middle">PYTHON</text>
+<rect class="node code" x="70" y="302" width="380" height="70" rx="6"/>
+<text class="t-title mono" x="84" y="324">③ load_prior</text>
+<text class="t-sub" x="84" y="342">newest saved run of this ticker, under 30 days old</text>
+<text class="t-sub" x="84" y="357">context only: today&#x27;s numbers always come fresh</text>
+<rect class="pill code" x="391.4" y="310" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="416.7" y="321.5" text-anchor="middle">PYTHON</text>
+<rect class="node mixed" x="70" y="416" width="380" height="70" rx="6"/>
+<rect class="stripe-model" x="70" y="416" width="5" height="35.0" />
+<rect class="stripe-code" x="70" y="451.0" width="5" height="35.0" />
+<text class="t-title mono" x="84" y="438">④ analyze_run (synthesize)</text>
+<text class="t-sub" x="84" y="456">model writes the thesis; Python computes signals, gaps,</text>
+<text class="t-sub" x="84" y="471">sources, checks evidence numbers, caps confidence</text>
+<rect class="pill mixed" x="342.6" y="424" width="99.4" height="16" rx="8"/>
+<text class="pill-t mixed" x="392.3" y="435.5" text-anchor="middle">MODEL + PYTHON</text>
+<rect class="node mixed" x="70" y="530" width="380" height="70" rx="6"/>
+<rect class="stripe-model" x="70" y="530" width="5" height="35.0" />
+<rect class="stripe-code" x="70" y="565.0" width="5" height="35.0" />
+<text class="t-title mono" x="84" y="552">⑤ evaluate_and_optimize</text>
+<text class="t-sub" x="84" y="570">judge scores 6 criteria; Python decides the verdict</text>
+<text class="t-sub" x="84" y="585">revise up to 2 times, keep the best draft</text>
+<rect class="pill mixed" x="342.6" y="538" width="99.4" height="16" rx="8"/>
+<text class="pill-t mixed" x="392.3" y="549.5" text-anchor="middle">MODEL + PYTHON</text>
+<rect class="node code" x="70" y="644" width="380" height="70" rx="6"/>
+<text class="t-title mono" x="84" y="666">⑥ save_run  +  diff_runs</text>
+<text class="t-sub" x="84" y="684">append this run to memory</text>
+<text class="t-sub" x="84" y="699">report what changed since the last run</text>
+<rect class="pill code" x="391.4" y="652" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="416.7" y="663.5" text-anchor="middle">PYTHON</text>
+<polyline class="edge" points="260,144 260,188" marker-end="url(#arr)"/>
+<text class="lbl" x="272" y="171" text-anchor="start">LoopResult</text>
+<polyline class="edge" points="260,258 260,302" marker-end="url(#arr)"/>
+<text class="lbl" x="272" y="285" text-anchor="start">LoopResult + Reflection</text>
+<polyline class="edge" points="260,372 260,416" marker-end="url(#arr)"/>
+<text class="lbl" x="272" y="399" text-anchor="start">prior RunRecord (or none)</text>
+<polyline class="edge" points="260,486 260,530" marker-end="url(#arr)"/>
+<text class="lbl" x="272" y="513" text-anchor="start">SynthesisOutcome: Analysis + signals</text>
+<polyline class="edge" points="260,600 260,644" marker-end="url(#arr)"/>
+<text class="lbl" x="272" y="627" text-anchor="start">final analysis (best draft)</text>
+<polyline class="edge" points="260,714 260,758" marker-end="url(#arr)"/>
+<rect class="node plain" x="70" y="758" width="380" height="44" rx="6"/>
+<text class="t-title mono" x="84" y="780">PipelineResult</text>
+<text class="t-sub" x="84" y="798">loop, reflection, outcome, evaluation, stage_errors, prior, changes</text>
+<polyline class="edge" points="450,109 500,109" marker-end="url(#arr)"/>
+<text class="lbl" x="475" y="101" text-anchor="middle">calls</text>
+<rect class="node ext" x="500" y="70" width="220" height="140" rx="6"/>
+<text class="t-title" x="514" y="92">tool menu · tool_specs.py</text>
+<text class="t-sub mono" x="514" y="116">get_company_profile</text>
+<text class="t-sub mono" x="514" y="138">get_fundamentals</text>
+<text class="t-sub mono" x="514" y="160">get_earnings_history</text>
+<text class="t-sub mono" x="514" y="182">get_news_insights</text>
+<text class="lbl" x="514" y="202">news: see figure 2</text>
+<rect class="node ext" x="760" y="76" width="220" height="44" rx="6"/>
+<text class="t-title" x="774" y="98">yfinance (Yahoo)</text>
+<text class="t-sub" x="774" y="116">profile, price, fundamentals</text>
+<rect class="node ext" x="760" y="132" width="220" height="44" rx="6"/>
+<text class="t-title" x="774" y="154">Finnhub</text>
+<text class="t-sub" x="774" y="172">earnings history, company news</text>
+<polyline class="edge" points="720,112 740,112 740,98 760,98" marker-end="url(#arr)"/>
+<polyline class="edge" points="720,134 740,134 740,104 760,104" marker-end="url(#arr)"/>
+<polyline class="edge" points="720,156 740,156 740,148 760,148" marker-end="url(#arr)"/>
+<polyline class="edge" points="720,178 740,178 740,160 760,160" marker-end="url(#arr)"/>
+<rect class="node ext" x="760" y="196" width="220" height="78" rx="6"/>
+<text class="t-title" x="774" y="218">OpenRouter LLM</text>
+<text class="t-sub" x="774" y="236">planner, tool loop, news steps,</text>
+<text class="t-sub" x="774" y="251">synthesis and judge</text>
+<text class="t-sub" x="774" y="266">settings: config.py</text>
+<rect class="node store" x="500" y="312" width="220" height="50" rx="6"/>
+<text class="t-title mono" x="514" y="334">data/memory.jsonl</text>
+<text class="t-sub" x="514" y="352">append-only, one line per run</text>
+<polyline class="edge" points="500,337 450,337" marker-end="url(#arr)"/>
+<text class="lbl" x="475" y="329" text-anchor="middle">reads</text>
+<rect class="node store" x="500" y="654" width="220" height="50" rx="6"/>
+<text class="t-title mono" x="514" y="676">data/memory.jsonl</text>
+<text class="t-sub" x="514" y="694">same file, appended</text>
+<polyline class="edge" points="450,679 500,679" marker-end="url(#arr)"/>
+<text class="lbl" x="475" y="671" text-anchor="middle">appends</text>
+<rect class="node code" x="500" y="420" width="480" height="62" rx="6"/>
+<text class="t-title mono" x="514" y="442">signals.py · compute_signals</text>
+<text class="t-sub" x="514" y="460">9 readings: P/E gap, margin, growth, net cash, FCF yield,</text>
+<text class="t-sub" x="514" y="475">liquidity, trend, analyst target, beat record</text>
+<rect class="pill code" x="921.4" y="428" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="946.7" y="439.5" text-anchor="middle">PYTHON</text>
+<polyline class="edge" points="450,451 500,451" marker-end="url(#arr)"/>
+<text class="lbl" x="475" y="443" text-anchor="middle">uses</text>
+<rect class="node code" x="500" y="524" width="480" height="82" rx="6"/>
+<text class="t-title mono" x="514" y="546">evaluation_rubric.py + evaluation_rules.py</text>
+<text class="t-sub" x="514" y="564">6 criteria scored 1 to 5; pass = mean ≥ 4.0, no score &lt; 3,</text>
+<text class="t-sub" x="514" y="579">and no critical issue; MAX_ROUNDS = 2</text>
+<rect class="pill code" x="921.4" y="532" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="946.7" y="543.5" text-anchor="middle">PYTHON</text>
+<polyline class="edge" points="450,565 500,565" marker-end="url(#arr)"/>
+<text class="lbl" x="475" y="557" text-anchor="middle">uses</text>
+<polyline class="edge loop" points="70,585 38,585 38,451 70,451" marker-end="url(#arrloop)"/>
+<text class="lbl loopt" x="22" y="518" text-anchor="middle" transform="rotate(-90 22 518)">revise: reviewer notes back to ④, at most 2 times</text></svg></div>
+    <figcaption>One call, <code>run_pipeline</code>, chains six stages. Each stage hands one named shape to the next, and a crash in a later stage is recorded without losing earlier work. Stages ⑤ and ⑥ are switched on from the command line (<code>--evaluate</code>, and memory unless <code>--no-memory</code>).</figcaption>
+  </figure>
+</section>
+
+<section id="requirements">
+  <h2>Where the course requirements live</h2>
+  <p>The agent has planning, dynamic tool use, self-reflection and memory. The three workflow patterns sit around and inside it.</p>
+  <div class='tbl'><table><thead><tr><th scope='col'>Course requirement</th><th scope='col'>Where it lives</th><th scope='col'>Entry point</th></tr></thead><tbody><tr class='grp'><th colspan='3' scope='colgroup'>Agent</th></tr><tr><td>Planning</td><td>decides which tools to call and why, from the company profile</td><td><code>plan_research</code></td></tr><tr><td>Dynamic tool use</td><td>the model calls tools from a menu; Python validates and runs each call</td><td><code>run_research_loop</code> + <code>dispatch</code></td></tr><tr><td>Self-reflection</td><td>retries failed tools once and reports the gaps that remain</td><td><code>reflect</code></td></tr><tr><td>Memory</td><td>append-only run history; the next run reports what changed</td><td><code>load_prior</code>, <code>save_run</code>, <code>diff_runs</code></td></tr><tr class='grp'><th colspan='3' scope='colgroup'>Workflow patterns</th></tr><tr><td>Prompt chaining</td><td>news: Ingest, Preprocess, Classify, Extract, Summarize</td><td><code>get_news_insights</code></td></tr><tr><td>Routing</td><td>the classifier's label selects one of three specialists</td><td><code>route</code></td></tr><tr><td>Evaluator-optimizer</td><td>judge scores, Python decides, synthesis revises, at most 2 rounds</td><td><code>evaluate_and_optimize</code></td></tr></tbody></table></div>
+</section>
+
+<section id="news">
+  <h2>News workflow: prompt chaining and routing</h2>
+  <p>This is the <code>get_news_insights</code> tool. It runs as a fixed chain, so code decides the order. Each article gets one label, and the label picks exactly one specialist.</p>
+  <figure class="f2">
+    <div class="fig-scroll"><svg viewBox="0 0 1180 300" role="img" aria-label="News workflow: ingest, preprocess, classify, route to one of three specialists, each extracting facts then summarizing, producing a list of NewsInsight items."><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker>
+<marker id="arrloop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead-loop"/></marker>
+</defs>
+<rect class="node code" x="20" y="105" width="165" height="90" rx="6"/>
+<text class="t-title mono" x="34" y="127">collect_articles</text>
+<text class="t-sub" x="34" y="145">Finnhub company_news,</text>
+<text class="t-sub" x="34" y="160">ONE 90-day call</text>
+<rect class="pill code" x="126.4" y="173" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="151.7" y="184.5" text-anchor="middle">PYTHON</text>
+<rect class="node code" x="215" y="105" width="165" height="90" rx="6"/>
+<text class="t-title mono" x="229" y="127">select_articles</text>
+<text class="t-sub" x="229" y="145">clean, dedupe, drop old,</text>
+<text class="t-sub" x="229" y="160">rank by company name</text>
+<rect class="pill code" x="321.4" y="173" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="346.7" y="184.5" text-anchor="middle">PYTHON</text>
+<rect class="node mixed" x="410" y="105" width="165" height="90" rx="6"/>
+<rect class="stripe-model" x="410" y="105" width="5" height="45.0" />
+<rect class="stripe-code" x="410" y="150.0" width="5" height="45.0" />
+<text class="t-title mono" x="424" y="127">classify_articles</text>
+<text class="t-sub" x="424" y="145">model labels articles;</text>
+<text class="t-sub" x="424" y="160">Python checks the label</text>
+<rect class="pill mixed" x="467.6" y="173" width="99.4" height="16" rx="8"/>
+<text class="pill-t mixed" x="517.3" y="184.5" text-anchor="middle">MODEL + PYTHON</text>
+<rect class="node code" x="605" y="105" width="165" height="90" rx="6"/>
+<text class="t-title mono" x="619" y="127">route</text>
+<text class="t-sub" x="619" y="145">label → specialist</text>
+<text class="t-sub" x="619" y="160">(a lookup table)</text>
+<rect class="pill code" x="711.4" y="173" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="736.7" y="184.5" text-anchor="middle">PYTHON</text>
+<polyline class="edge" points="185,150 215,150" marker-end="url(#arr)"/>
+<polyline class="edge" points="380,150 410,150" marker-end="url(#arr)"/>
+<polyline class="edge" points="575,150 605,150" marker-end="url(#arr)"/>
+<text class="lbl" x="200" y="142" text-anchor="middle">~250</text>
+<text class="lbl" x="395" y="142" text-anchor="middle">≤ 20</text>
+<text class="lbl" x="590" y="142" text-anchor="middle">≤ 8</text>
+<rect class="node model" x="800" y="15" width="190" height="86" rx="6"/>
+<text class="t-title" x="814" y="37">earnings specialist</text>
+<text class="t-sub" x="814" y="55">Extract facts, then Summarize</text>
+<text class="t-sub" x="814" y="70">2 model calls per article</text>
+<rect class="pill model" x="937.5" y="79" width="44.5" height="16" rx="8"/>
+<text class="pill-t model" x="959.8" y="90.5" text-anchor="middle">MODEL</text>
+<rect class="node model" x="800" y="107" width="190" height="86" rx="6"/>
+<text class="t-title" x="814" y="129">market specialist</text>
+<text class="t-sub" x="814" y="147">Extract facts, then Summarize</text>
+<text class="t-sub" x="814" y="162">2 model calls per article</text>
+<rect class="pill model" x="937.5" y="171" width="44.5" height="16" rx="8"/>
+<text class="pill-t model" x="959.8" y="182.5" text-anchor="middle">MODEL</text>
+<rect class="node model" x="800" y="199" width="190" height="86" rx="6"/>
+<text class="t-title" x="814" y="221">general specialist</text>
+<text class="t-sub" x="814" y="239">Extract facts, then Summarize</text>
+<text class="t-sub" x="814" y="254">2 model calls per article</text>
+<rect class="pill model" x="937.5" y="263" width="44.5" height="16" rx="8"/>
+<text class="pill-t model" x="959.8" y="274.5" text-anchor="middle">MODEL</text>
+<polyline class="edge" points="770,150 785,150 785,58 800,58" marker-end="url(#arr)"/>
+<polyline class="edge" points="770,150 785,150 785,150 800,150" marker-end="url(#arr)"/>
+<polyline class="edge" points="770,150 785,150 785,242 800,242" marker-end="url(#arr)"/>
+<rect class="node plain" x="1025" y="105" width="140" height="90" rx="6"/>
+<text class="t-title mono" x="1039" y="127">NewsInsight[]</text>
+<text class="t-sub" x="1039" y="145">category, summary,</text>
+<text class="t-sub" x="1039" y="160">sentiment, url,</text>
+<text class="t-sub" x="1039" y="175">published</text>
+<polyline class="edge" points="990,58 1008,58 1008,150 1025,150" marker-end="url(#arr)"/>
+<polyline class="edge" points="990,150 1008,150 1008,150 1025,150" marker-end="url(#arr)"/>
+<polyline class="edge" points="990,242 1008,242 1008,150 1025,150" marker-end="url(#arr)"/>
+<text class="lbl strong" x="20" y="28" text-anchor="start">Ingest → Preprocess → Classify → Route → Extract → Summarize</text>
+<text class="lbl" x="20" y="46" text-anchor="start">prompt chaining: each station feeds the next</text>
+<text class="lbl strong" x="605" y="96" text-anchor="start">routing</text>
+<text class="lbl" x="410" y="225" text-anchor="start">irrelevant dropped (kept for audit)</text>
+<text class="lbl" x="410" y="241" text-anchor="start">bad label: skipped and counted</text></svg></div>
+    <figcaption>Counts above the arrows are the typical size at that point: Finnhub returns about 250 items, 20 are classified at most, and up to 8 relevant ones reach the specialists. Extract and Summarize are two separate model calls inside the routed specialist.</figcaption>
+  </figure>
+  <div class="cols">
+    <div><h3>What the model may do</h3><ul>
+      <li>Label an article: earnings, market, general or irrelevant.</li>
+      <li>Extract short facts from the article.</li>
+      <li>Summarize those facts and give a sentiment.</li>
+    </ul></div>
+    <div><h3>What Python checks</h3><ul>
+      <li>The label is one of the four, or the article is skipped and counted.</li>
+      <li>Every number in the facts and summary appears in the article.</li>
+      <li>Sentiment is valid; the summary is length-capped.</li>
+      <li>Article text sits in the user message only.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="evaluator">
+  <h2>Evaluator-optimizer loop</h2>
+  <p>A second reader with a checklist. The judge gives scores; it never decides. Python applies the verdict rule, and a failing draft goes back through synthesis with the judge's notes.</p>
+  <figure class="f3">
+    <div class="fig-scroll"><svg viewBox="0 0 1000 270" role="img" aria-label="Evaluator-optimizer loop: a draft is scored by the judge, Python decides pass or revise, a revision goes back through synthesis and is judged again, at most twice."><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker>
+<marker id="arrloop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrowhead-loop"/></marker>
+</defs>
+<rect class="node plain" x="20" y="70" width="140" height="60" rx="6"/>
+<text class="t-title mono" x="34" y="92">draft</text>
+<text class="t-sub" x="34" y="110">from analyze_run</text>
+<polyline class="edge" points="160,100 210,100" marker-end="url(#arr)"/>
+<rect class="node model" x="210" y="70" width="170" height="60" rx="6"/>
+<text class="t-title mono" x="224" y="92">judge</text>
+<text class="t-sub" x="224" y="110">scores 6 criteria, 1 to 5</text>
+<rect class="pill model" x="327.5" y="78" width="44.5" height="16" rx="8"/>
+<text class="pill-t model" x="349.8" y="89.5" text-anchor="middle">MODEL</text>
+<polyline class="edge" points="380,100 450,100" marker-end="url(#arr)"/>
+<text class="lbl" x="415" y="92" text-anchor="middle">scores</text>
+<rect class="node code" x="450" y="70" width="220" height="60" rx="6"/>
+<text class="t-title mono" x="464" y="92">decide_verdict</text>
+<text class="t-sub" x="464" y="110">mean ≥ 4.0, no score &lt; 3,</text>
+<text class="t-sub" x="464" y="125">no critical issue</text>
+<rect class="pill code" x="611.4" y="78" width="50.6" height="16" rx="8"/>
+<text class="pill-t code" x="636.7" y="89.5" text-anchor="middle">PYTHON</text>
+<polyline class="edge" points="670,100 740,100" marker-end="url(#arr)"/>
+<text class="lbl" x="705" y="92" text-anchor="middle">pass</text>
+<rect class="node plain" x="740" y="70" width="240" height="60" rx="6"/>
+<text class="t-title" x="754" y="92">final analysis</text>
+<text class="t-sub" x="754" y="110">best draft, marked pass or not</text>
+<rect class="node mixed" x="340" y="180" width="250" height="78" rx="6"/>
+<rect class="stripe-model" x="340" y="180" width="5" height="39.0" />
+<rect class="stripe-code" x="340" y="219.0" width="5" height="39.0" />
+<text class="t-title mono" x="354" y="202">synthesize(feedback, previous)</text>
+<text class="t-sub" x="354" y="220">same Python guards as a first draft</text>
+<rect class="pill mixed" x="482.6" y="236" width="99.4" height="16" rx="8"/>
+<text class="pill-t mixed" x="532.3" y="247.5" text-anchor="middle">MODEL + PYTHON</text>
+<polyline class="edge loop" points="550,130 550,180" marker-end="url(#arrloop)"/>
+<text class="lbl loopt" x="558" y="160" text-anchor="start">revise + reviewer notes</text>
+<polyline class="edge loop" points="340,210 295,210 295,130" marker-end="url(#arrloop)"/>
+<text class="lbl loopt" x="286" y="168" text-anchor="end">revised draft</text>
+<text class="lbl strong" x="20" y="28" text-anchor="start">At most 2 revisions. A draft that never passes is returned, marked as not passed.</text></svg></div>
+    <figcaption>The loop also stops when the judge fails after 3 attempts at valid output, when the reviser crashes, or when a revision falls back to the rule-based analysis. In each case the best draft so far is kept. <code>--evaluate</code> works only together with <code>--analyze</code>.</figcaption>
+  </figure>
+  <div class="cols">
+    <div><h3>The six criteria</h3><ul>
+      <li><code>evidence_support</code>: every claim backed by a fact</li>
+      <li><code>numeric_accuracy</code>: numbers match the raw tool data</li>
+      <li><code>stance_consistency</code>: the stance follows the evidence</li>
+      <li><code>risk_coverage</code>: real risks, traceable to the data, plus the gaps</li>
+      <li><code>confidence_calibration</code>: honest given the gaps</li>
+      <li><code>source_quality</code>: evidence has named sources</li>
+    </ul></div>
+    <div><h3>The verdict rule</h3><ul>
+      <li>Each criterion is a whole number from 1 to 5, described at 1, 3 and 5.</li>
+      <li>Pass: mean ≥ 4.0 and no score below 3.</li>
+      <li>Any critical issue forces a revision, whatever the scores.</li>
+      <li>Ties keep the earlier draft; a revision must be strictly better.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="names">
+  <h2>Naming map</h2>
+  <p>One name per component, the same in the diagrams, the notebook, the README and the code.</p>
+  <div class='tbl'><table><thead><tr><th scope='col'>Concept</th><th scope='col'>File</th><th scope='col'>Entry point</th><th scope='col'>Who decides</th></tr></thead><tbody><tr><td>Command line</td><td><code>run_agent.py</code></td><td><code>main → run_pipeline</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Pipeline conductor</td><td><code>pipeline.py</code></td><td><code>run_pipeline</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Pre-flight check</td><td><code>tools/company_profile.py</code></td><td><code>get_company_profile</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Planner</td><td><code>agent/planner.py</code></td><td><code>plan_research</code></td><td><span class='chip model'>MODEL</span></td></tr><tr><td>Research loop (the agent core)</td><td><code>agent/loop.py</code></td><td><code>run_research_loop</code></td><td><span class='chip mixed'>MODEL + PYTHON</span></td></tr><tr><td>Tool dispatcher</td><td><code>agent/dispatcher.py</code></td><td><code>dispatch</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Tool menu</td><td><code>tools/tool_specs.py</code></td><td><code>TOOL_SPECS, TOOL_FUNCTIONS</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Fundamentals tool</td><td><code>tools/fundamentals.py</code></td><td><code>get_fundamentals</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Earnings tool</td><td><code>tools/earnings_history.py</code></td><td><code>get_earnings_history</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>News tool</td><td><code>tools/news.py</code></td><td><code>get_news_insights</code></td><td><span class='chip mixed'>MODEL + PYTHON</span></td></tr><tr><td>Reflection</td><td><code>agent/reflection.py</code></td><td><code>reflect</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Signals</td><td><code>agent/signals.py</code></td><td><code>compute_signals</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Synthesis</td><td><code>agent/synthesis.py</code></td><td><code>analyze_run / synthesize</code></td><td><span class='chip mixed'>MODEL + PYTHON</span></td></tr><tr><td>Memory</td><td><code>memory.py</code></td><td><code>load_prior, save_run, diff_runs</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>News: ingest and preprocess</td><td><code>workflows/news_ingest.py</code></td><td><code>collect_articles</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>News: classify</td><td><code>workflows/news_classify.py</code></td><td><code>classify_articles</code></td><td><span class='chip mixed'>MODEL + PYTHON</span></td></tr><tr><td>News: route, extract, summarize</td><td><code>workflows/news_specialists.py</code></td><td><code>route, build_insights</code></td><td><span class='chip mixed'>MODEL + PYTHON</span></td></tr><tr><td>Evaluation rubric</td><td><code>workflows/evaluation_rubric.py</code></td><td><code>RUBRIC, build_rubric_text</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Verdict rules</td><td><code>workflows/evaluation_rules.py</code></td><td><code>decide_verdict</code></td><td><span class='chip code'>PYTHON</span></td></tr><tr><td>Evaluator-optimizer</td><td><code>workflows/evaluator_optimizer.py</code></td><td><code>evaluate_and_optimize, evaluate_run</code></td><td><span class='chip mixed'>MODEL + PYTHON</span></td></tr><tr><td>Data shapes</td><td><code>contracts.py</code></td><td><code>LoopResult, Analysis, NewsInsight, Evaluation</code></td><td>—</td></tr><tr><td>Settings</td><td><code>config.py</code></td><td><code>MODEL, JUDGE_MODEL, MAX_STEPS</code></td><td>—</td></tr></tbody></table></div>
+</section>
+
+<section id="contracts">
+  <h2>Data shapes between stages</h2>
+  <div class='tbl'><table><thead><tr><th scope='col'>Shape</th><th scope='col'>Produced by</th><th scope='col'>Holds</th></tr></thead><tbody><tr><td><code>LoopResult</code></td><td><code>run_research_loop</code>, <code>reflect</code></td><td>ticker, stop_reason, profile, plan, results, trace, fatal_error</td></tr><tr><td><code>Reflection</code></td><td><code>reflect</code></td><td>tools retried, gaps that remain, a summary</td></tr><tr><td><code>NewsInsight</code></td><td><code>get_news_insights</code></td><td>category, summary, sentiment, source_url, published</td></tr><tr><td><code>Analysis</code></td><td><code>analyze_run</code></td><td>ticker, stance (bullish / neutral / bearish), confidence (low / medium / high), thesis, evidence_used, risks, sources, data_gaps</td></tr><tr><td><code>Evaluation</code></td><td><code>to_evaluation</code></td><td>verdict, overall_score, scores, feedback, rounds_used, final_analysis</td></tr><tr><td><code>RunRecord</code></td><td><code>record_from_outcome</code></td><td>ticker, saved_at, stance, confidence, thesis, signals, data_gaps</td></tr><tr><td><code>PipelineResult</code></td><td><code>run_pipeline</code></td><td>all of the above plus stage_errors, prior, changes, saved</td></tr></tbody></table></div>
+</section>
+
+<section id="decisions">
+  <h2>Decision log</h2>
+  <p>The choices a reader will ask about, with the reason and the place in the code. Thresholds are named constants marked <code># AUTHOR:</code> in the source.</p>
+  <div class='tbl'><table><thead><tr><th scope='col'>Decision</th><th scope='col'>Why</th><th scope='col'>In the code</th></tr></thead><tbody><tr class='grp'><th colspan='3' scope='colgroup'>Agent design</th></tr><tr><td>The model chooses tools; code owns everything checkable</td><td>A model can omit a gap, round a number into a different one, or sound more certain than the data allows. The model proposes, Python checks.</td><td><code>planner.py</code> <code>loop.py</code> (model); <code>reflection.py</code> <code>evaluation_rules.py</code> (code)</td></tr><tr><td>Pre-flight profile before planning</td><td>A bad ticker or an ETF stops the run before any model call is spent. The profile (size, profitability, days to earnings) also shapes the plan.</td><td><code>get_company_profile</code>, stop_reason fatal_error</td></tr><tr><td>Step cap of 8</td><td>Stops a looping model and leaves room for retries; it is a safety stop, not a cost saving.</td><td><code>config.MAX_STEPS</code></td></tr><tr><td>Reflection is code, not a model</td><td>A retry helps transient failures only. A permanent gap (negative earnings) must not be retried.</td><td><code>reflect</code>, <code>MAX_RETRIES_PER_TOOL = 1</code></td></tr><tr><td>A failed fetch raises; an empty result does not</td><td>A quiet empty list would make the trace say success with no data. The dispatcher is the one place that catches the error and records ok=False, so reflection can retry.</td><td><code>dispatch</code>; <code>get_earnings_history</code>, <code>get_news_insights</code></td></tr><tr><td>Pipeline failure policy</td><td>A setup error (missing API key) raises. A fatal data error is a normal result. A crash in a later stage is recorded and the run returns what it has.</td><td><code>PipelineResult.stage_errors</code></td></tr><tr class='grp'><th colspan='3' scope='colgroup'>Analysis</th></tr><tr><td>Signals are computed by Python</td><td>Each is a small checkable judgment with its source field; the model must account for every one. Thresholds are named constants marked AUTHOR. The scorecard is output only, with no invented letter grades.</td><td><code>compute_signals</code>, <code>format_scorecard</code></td></tr><tr><td>Confidence has a Python ceiling</td><td>Missing fundamentals or earnings history: low. Three or more genuine core gaps, or fewer than 3 quarters: medium. The model may ask for less, never more.</td><td><code>confidence_ceiling</code>, <code>apply_ceiling</code></td></tr><tr><td>Evidence must be verifiable</td><td>Each item's source path must exist and its number must match within 2%, or the item is dropped. No verifiable evidence means a rule-based fallback at low confidence.</td><td><code>check_evidence</code></td></tr><tr><td>Gaps and sources are built by Python</td><td>The model cannot hide a gap or invent a source.</td><td><code>build_data_gaps</code>, <code>build_sources</code></td></tr><tr><td>Earnings beats follow the FactSet convention</td><td>Actual vs the mean estimate, rounded to cents half-up. Percent surprise is left out when the estimate is under $0.10. A beat is the baseline (about 78% of S&P 500 companies). One source (Finnhub) is never mixed with yfinance EPS.</td><td><code>earnings_history.py</code></td></tr><tr class='grp'><th colspan='3' scope='colgroup'>News workflow</th></tr><tr><td>One 90-day call, a 14-day window, widened once</td><td>The free tier allows 60 calls a minute. The window is chosen locally; if fewer than 3 articles remain it widens once and the result says so.</td><td><code>LOOKBACK_DAYS</code>, <code>WIDE_LOOKBACK_DAYS</code>, <code>MIN_ARTICLES</code></td></tr><tr><td>Rank by company mentions before the cap, never filter by it</td><td>Finnhub returns about 250 newest items and tags roundups with the ticker. A pool of 20 is classified until 8 relevant ones are found.</td><td><code>rank_candidates</code>, <code>MAX_CANDIDATES</code>, <code>MAX_ARTICLES</code></td></tr><tr><td>A bad label is skipped, never guessed</td><td>Irrelevant articles are dropped but kept for audit. Article text goes only in the user message, never the system prompt, so it cannot give the model orders.</td><td><code>classify_articles</code>, <code>parse_label</code></td></tr><tr><td>Summaries are grounded</td><td>Every number in the facts and the summary must appear in the article. The summary is written from the extracted facts only and is length-capped.</td><td><code>check_numbers_grounded</code></td></tr><tr><td>Stale news is a data gap</td><td>Newest article older than 14 days is reported, so confidence can be judged.</td><td><code>build_data_gaps</code></td></tr><tr class='grp'><th colspan='3' scope='colgroup'>Memory</th></tr><tr><td>Append-only, filtered on read</td><td>Everything is kept; only the newest record under 30 days is used. Deleting is irreversible, hiding is not. Python computes the diff. Fallback analyses are not saved. On in the CLI, off in the library.</td><td><code>memory.py</code>, <code>MAX_AGE_DAYS = 30</code></td></tr><tr class='grp'><th colspan='3' scope='colgroup'>Evaluator-optimizer</th></tr><tr><td>The judge scores; Python decides</td><td>Pass needs mean ≥ 4.0, no score below 3, and no critical issue. The rule is deterministic and testable; a model deciding could be talked into a pass.</td><td><code>decide_verdict</code></td></tr><tr><td>Six criteria with 1 / 3 / 5 anchors</td><td>Combined from two team members' draft rubrics. Dropped actionability (the contract always forces a stance) and thesis_quality (overlaps evidence and consistency); added numeric_accuracy and confidence_calibration, which need the raw tool data.</td><td><code>evaluation_rubric.py</code></td></tr><tr><td>The reviser is synthesis itself</td><td>A revision passes the same Python guards as a first draft, so it cannot invent evidence to raise its score. The best draft is kept, and a draft that never passes is marked, never passed silently.</td><td><code>evaluate_and_optimize</code>, <code>synthesize(feedback, previous)</code></td></tr><tr><td>The judge model is its own setting</td><td>The same model writes and judges by default, which can be lenient. Changing config.JUDGE_MODEL is the fix.</td><td><code>config.JUDGE_MODEL</code></td></tr><tr class='grp'><th colspan='3' scope='colgroup'>Engineering</th></tr><tr><td>Everything that calls out is injectable</td><td>runner, reflector, analyst, evaluator, classifier, analyzer, judge and reviser are parameters, so the whole suite (427 tests) runs with no model and no network.</td><td>the <code>= default</code> arguments in each signature</td></tr><tr><td>Free-tier limits checked before building</td><td>Finnhub 60 calls a minute, Alpha Vantage 25 a day, NewsAPI about 100 a day; yfinance is unofficial.</td><td>—</td></tr></tbody></table></div>
+</section>
+
+<section id="limits">
+  <h2>Failure policy, known limits, next steps</h2>
+  <div class="cols">
+    <div><h3>Failure policy</h3><ul>
+      <li>Setup problem (missing API key): raises.</li>
+      <li>Bad ticker or not a stock: a normal result, later stages skipped.</li>
+      <li>Failed fetch: raises, so the trace shows ok=False and reflection can retry.</li>
+      <li>Later-stage crash: recorded in stage_errors; the run returns partial results.</li>
+      <li>Unusable model reply in synthesis: rule-based analysis at low confidence.</li>
+    </ul></div>
+    <div><h3>Known limits</h3><ul>
+      <li>The same model writes and judges by default.</li>
+      <li>The judge is not yet calibrated against human ratings.</li>
+      <li>The number check catches invented numbers, not invented claims.</li>
+      <li>Risks are free text; they are not yet source-linked like evidence.</li>
+      <li>Finnhub's free news feed is capped and noisy; news sentiment leans positive.</li>
+      <li>The news step makes many sequential model calls per ticker.</li>
+    </ul></div>
+    <div><h3>Next</h3><ul>
+      <li>Give the model the prior run as context (today the diff only appears in the report).</li>
+      <li>Scorecard formatting: percentages and the earnings-record label.</li>
+      <li>Compare the LLM news classifier with a simpler baseline on about 20 hand-labeled headlines.</li>
+      <li>A CI check that runs the offline tests and the linter on every push.</li>
+    </ul></div>
+  </div>
+</section>
+</main>
+
+</body></html>
