@@ -98,7 +98,7 @@ multi-agent-financial-analyst/
 │   ├── pipeline.py    # Connect the research stages
 │   └── run_agent.py   # Command-line entry point
 ├── docs/              # Architecture diagrams, naming map and decision log
-├── notebooks/         # Demonstration notebook and separate experiments
+├── notebooks/         # Demonstration notebook (+ HTML/PDF); sandbox/ holds early experiments
 ├── tests/             # Offline tests with simulated external responses
 ├── data/              # Created at run time; memory.jsonl is ignored by Git
 ├── .env.example       # Variable names only; keep real keys in .env
@@ -248,9 +248,7 @@ Every evidence line carries the tool-data path it came from, and Python drops an
 | Notebook | Purpose |
 |---|---|
 | [demo_queries.ipynb](notebooks/demo_queries.ipynb) | **Main demonstration notebook**, saved with live outputs. Covers agent design and workflows, the whole pipeline, each module on its own, the failure behaviours, and the evaluator-optimizer loop. Parts 0–2 need API keys; parts of 2 and all of 3 run offline. Use a kernel that has the project installed. Readable exports: [HTML](notebooks/demo_queries.html) and [PDF](notebooks/demo_queries.pdf). |
-| [sudhakaran_test.ipynb](notebooks/sudhakaran_test.ipynb) | Working scratchpad for API experiments (yfinance, Finnhub, OpenRouter tool calling, news pipeline checks). |
-| [PARTC_FinalProject_Draft1.ipynb](notebooks/PARTC_FinalProject_Draft1.ipynb) | Early prototype of the workflow patterns and the evaluator on mock data, kept for history. |
-| [Jeff_News_Ingest.ipynb](notebooks/Jeff_News_Ingest.ipynb) ([HTML export](notebooks/Jeff_News_Ingest.html)) | Separate Colab-oriented news experiment (LangChain/LangGraph, FAISS retrieval). Has its own dependencies and is not used by the command-line application. |
+| [notebooks/sandbox/](notebooks/sandbox/README.md) | **Not for grading.** Early experiments and scratch work kept for history (API tests, a mock-data evaluator prototype, a Colab news experiment). They may not run as-is. |
 
 To run a notebook locally, register the environment as a kernel (`python -m pip install ipykernel` then `python -m ipykernel install --user --name finagent`), start Jupyter or VS Code, and select the `finagent` kernel. Run cells from the top the first time; the first cell moves to the repository root so `.env` and `data/` are found.
 
