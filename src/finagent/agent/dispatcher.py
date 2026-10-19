@@ -16,14 +16,14 @@ the model so it can correct itself. Every outcome also goes in the trace.
 Note: the loop, not the dispatcher, is responsible for making sure the
 ticker matches the stock being analysed in this run.
 
-AI DISCLOSURE: 
+AI DISCLOSURE:
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 from finagent.tools.company_profile import ProfileError

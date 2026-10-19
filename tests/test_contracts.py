@@ -6,14 +6,28 @@ from typing import Any, Literal, Union, get_args, get_origin, get_type_hints
 import pytest
 
 from finagent.contracts import (
-    Analysis, CriterionScore, Evaluation, LoopResult, NewsInsight, Plan, Reflection,
+    Analysis,
+    CriterionScore,
+    Evaluation,
+    LoopResult,
+    NewsInsight,
+    Plan,
+    Reflection,
 )
 from finagent.samples import (
-    SAMPLE_ANALYSIS, SAMPLE_EVALUATION, SAMPLE_LOOP_RESULT,
-    SAMPLE_NEWS_INSIGHT, SAMPLE_PLAN, SAMPLE_REFLECTION,
+    SAMPLE_ANALYSIS,
+    SAMPLE_EVALUATION,
+    SAMPLE_LOOP_RESULT,
+    SAMPLE_NEWS_INSIGHT,
+    SAMPLE_PLAN,
+    SAMPLE_REFLECTION,
 )
 from finagent.workflows.evaluation_rules import (
-    CRITERION_FLOOR, MAX_ROUNDS, PASS_AVERAGE, RUBRIC_CRITERIA, decide_verdict,
+    CRITERION_FLOOR,
+    MAX_ROUNDS,
+    PASS_AVERAGE,
+    RUBRIC_CRITERIA,
+    decide_verdict,
 )
 
 

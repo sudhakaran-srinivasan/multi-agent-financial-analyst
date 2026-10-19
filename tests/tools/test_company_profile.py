@@ -4,7 +4,6 @@ from datetime import date
 import pytest
 
 from finagent.tools.company_profile import (
-    
     InvalidTickerError,
     NotAStockError,
     build_profile,
