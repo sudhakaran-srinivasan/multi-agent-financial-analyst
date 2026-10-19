@@ -7,10 +7,11 @@ The model decides which data to gather and writes the thesis. Python checks ever
 > **Educational project, not investment advice.** Built for the AAI-520 final team project (Multi-Agent Financial Analysis System).
 
 - **Repository:** <https://github.com/sudhakaran-srinivasan/multi-agent-financial-analyst>
+- **Submitted version:** git tag [`v1.0-group6-submission`](https://github.com/sudhakaran-srinivasan/multi-agent-financial-analyst/tree/v1.0-group6-submission)
 - **Architecture:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (diagrams, naming map, decision log)
-- **Guided demo notebook:** [notebooks/demo_queries.ipynb](notebooks/demo_queries.ipynb)
+- **Final notebook (submission):** [notebooks/Multi_Agent_Financial_Analyst_Final.ipynb](notebooks/Multi_Agent_Financial_Analyst_Final.ipynb) ([PDF](notebooks/Multi_Agent_Financial_Analyst_Final.pdf))
 
-## Team
+## Team (Group 6)
 
 - Sudhakaran Srinivasan
 - April Bradick
@@ -62,7 +63,7 @@ The memory function records and compares runs. The prior record is shown in the 
 | Financial news and filings datasets/APIs | Finnhub is used for company news and earnings history. NewsAPI, Alpha Vantage, FRED and SEC EDGAR were considered but not used; see [Data sources](#data-sources). |
 | GitHub for version control, with a README | This repository. |
 | PEP 8 style | Checked with `ruff`; see [Code style](#code-style). |
-| Notebook that includes the GitHub link and explains agent design, functions and evaluation | [notebooks/demo_queries.ipynb](notebooks/demo_queries.ipynb) includes the GitHub link and design, function and evaluation comments, with live outputs. Submission copies: [PDF](notebooks/demo_queries.pdf) and [HTML](notebooks/demo_queries.html). |
+| Notebook that includes the GitHub link and explains agent design, functions and evaluation | [notebooks/Multi_Agent_Financial_Analyst_Final.ipynb](notebooks/Multi_Agent_Financial_Analyst_Final.ipynb) includes the GitHub link and design, function and evaluation comments, with live outputs. Submission copies: [PDF](notebooks/Multi_Agent_Financial_Analyst_Final.pdf) and [HTML](notebooks/Multi_Agent_Financial_Analyst_Final.html). |
 | AI-tool disclosure | See [AI disclosure](#ai-disclosure). |
 
 ## Data sources
@@ -257,7 +258,7 @@ Every evidence line carries the tool-data path it came from, and Python drops an
 
 | Notebook | Purpose |
 |---|---|
-| [demo_queries.ipynb](notebooks/demo_queries.ipynb) | **Main demonstration notebook**, saved with live outputs. Covers agent design and workflows, the whole pipeline, each module on its own, the failure behaviours, and the evaluator-optimizer loop. Parts 0–2 need API keys; parts of 2 and all of 3 run offline. Use a kernel that has the project installed. Readable exports: [HTML](notebooks/demo_queries.html) and [PDF](notebooks/demo_queries.pdf). |
+| [Multi_Agent_Financial_Analyst_Final.ipynb](notebooks/Multi_Agent_Financial_Analyst_Final.ipynb) | **Main demonstration notebook**, saved with live outputs. Covers agent design and workflows, the whole pipeline, each module on its own, the failure behaviours, and the evaluator-optimizer loop. Parts 0–2 need API keys; parts of 2 and all of 3 run offline. Use a kernel that has the project installed. Readable exports: [HTML](notebooks/Multi_Agent_Financial_Analyst_Final.html) and [PDF](notebooks/Multi_Agent_Financial_Analyst_Final.pdf). |
 | [notebooks/sandbox/](notebooks/sandbox/README.md) | **Not for grading.** Early experiments and scratch work kept for history (API tests, a mock-data evaluator prototype, a Colab news experiment). They may not run as-is. |
 
 To run a notebook locally, register the environment as a kernel (`python -m pip install ipykernel` then `python -m ipykernel install --user --name finagent`), start Jupyter or VS Code, and select the `finagent` kernel. Run cells from the top the first time; the first cell moves to the repository root so `.env` and `data/` are found.

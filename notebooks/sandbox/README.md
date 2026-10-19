@@ -2,7 +2,7 @@
 
 These notebooks are early experiments and scratch work kept for history. They are **not** the project's demonstration and may not run as-is (some are Colab-oriented, some use mock data or older code).
 
-For the demonstration of the system, use [../demo_queries.ipynb](../demo_queries.ipynb) (also exported as [HTML](../demo_queries.html) and [PDF](../demo_queries.pdf)).
+For the demonstration of the system, use [../Multi_Agent_Financial_Analyst_Final.ipynb](../Multi_Agent_Financial_Analyst_Final.ipynb) (also exported as [HTML](../Multi_Agent_Financial_Analyst_Final.html) and [PDF](../Multi_Agent_Financial_Analyst_Final.pdf)).
 
 | Notebook | What it was for |
 |---|---|
